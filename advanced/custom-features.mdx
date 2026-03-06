@@ -1,0 +1,513 @@
+---
+title: Custom Features
+description: Understanding the feature system and how to create custom cave decorations
+---
+
+Features are decorative elements that populate Substratum's cave biomes. The feature system controls everything from stalactites and vegetation to ore deposits and water pools.
+
+## Feature System Overview
+
+Features in Substratum are defined using YAML configuration files located in the `features/` directory. Each feature controls:
+
+- **Distribution**: How frequently the feature appears
+- **Location**: Where the feature can be placed
+- **Structures**: What blocks/structures are placed
+
+<Note>
+Features run **after** cave carving and palette generation, decorating the carved cave surfaces.
+</Note>
+
+## Feature Anatomy
+
+A typical feature consists of three main components:
+
+### 1. Distributor
+
+Controls how frequently the feature attempts to spawn:
+
+```yaml
+distributor:
+  type: SAMPLER
+  sampler:
+    type: POSITIVE_WHITE_NOISE
+    salt: 6578
+  threshold: 0.1
+```
+
+**Parameters:**
+- `type`: Distribution method (SAMPLER, PADDING, etc.)
+- `sampler`: Noise function for distribution
+- `threshold`: Probability threshold (0.1 = 10% of locations)
+- `salt`: Random seed for this feature
+
+### 2. Locator
+
+Determines valid placement locations:
+
+```yaml
+locator:
+  type: AND
+  locators:
+    - type: PATTERN
+      range:
+        min: -64
+        max: 319
+      pattern:
+        type: MATCH_SOLID
+        offset: 1
+    - type: PATTERN
+      range:
+        min: -64
+        max: 319
+      pattern:
+        type: MATCH_AIR
+        offset: 0
+```
+
+**Common Locator Types:**
+- `PATTERN`: Match block patterns at specific offsets
+- `AND`: All conditions must be true
+- `OR`: Any condition can be true
+- `ADJACENT_PATTERN`: Check adjacent blocks
+- `GAUSSIAN_RANDOM`: Random height with gaussian distribution
+
+### 3. Structures
+
+Defines what is actually placed:
+
+```yaml
+structures:
+  distribution:
+    type: WHITE_NOISE
+  structures:
+    - giant_calcite_stalactite: 1
+    - blank: 5
+```
+
+**Parameters:**
+- `distribution`: How structures are selected
+- `structures`: List of structure IDs with weights
+
+## Example: Giant Calcite Stalactites
+
+Here's a complete feature definition from `giant_calcite_stalactites.yml`:
+
+```yaml
+id: GIANT_CALCITE_STALACTITES
+type: FEATURE
+
+distributor:
+  type: SAMPLER
+  sampler:
+    type: POSITIVE_WHITE_NOISE
+    salt: 6578
+  threshold: 0.1
+
+locator:
+  type: AND
+  locators:
+    - type: PATTERN
+      range: &range
+        min: -64
+        max: 319
+      pattern:
+        type: MATCH_SOLID
+        offset: 1
+    - type: PATTERN
+      range: *range
+      pattern:
+        type: MATCH_AIR
+        offset: 0
+    - type: ADJACENT_PATTERN
+      range: *range
+      pattern:
+        type: MATCH_SOLID
+        offset: 1
+
+structures:
+  distribution:
+    type: WHITE_NOISE
+  structures:
+    - giant_calcite_stalactite: 1
+    - blank: 5
+```
+
+<Accordion title="How This Feature Works">
+1. **Distributor**: Runs at 10% of locations (threshold: 0.1)
+2. **Locator**: Finds ceiling positions where:
+   - Block above (offset: 1) is solid
+   - Current block (offset: 0) is air
+   - Adjacent blocks (offset: 1) are solid
+3. **Structures**: Places stalactite with 1:5 ratio (16.7% when location is valid)
+</Accordion>
+
+## Feature Categories
+
+### Vegetation Features
+
+Plant-based decorations for cave biomes:
+
+```yaml
+# Substratum vegetation features
+features/substratum/vegetation/
+  - hanging_roots.yml
+  - substratum_mixed_flower_cover.yml
+  - mushrooms/
+    - small_cave_mushrooms.yml
+    - giant_red_mushrooms.yml
+    - giant_brown_mushrooms.yml
+```
+
+**Plantable Blocks Configuration** (`substratum_meta.yml`):
+
+```yaml
+plantable-blocks:
+  - minecraft:mud
+  - minecraft:grass_block
+  - minecraft:podzol
+  - minecraft:dirt
+  - minecraft:coarse_dirt
+  - minecraft:moss_block
+  - minecraft:rooted_dirt
+
+aquatic-plantable-blocks:
+  - minecraft:mud
+  - minecraft:sand
+  - minecraft:gravel
+  - minecraft:stone
+  - minecraft:deepslate
+
+sculk-plantable-blocks:
+  - minecraft:stone
+  - minecraft:tuff
+  - minecraft:deepslate
+  - minecraft:cobbled_deepslate
+  # ... more deepslate variants
+```
+
+### Geological Features
+
+Stone formations and structures:
+
+```yaml
+features/substratum/
+  stalactites/
+    - giant_calcite_stalactites.yml
+    - giant_sand_stalactites.yml
+  stalacmites/
+    - giant_calcite_stalacmites.yml
+    - giant_sand_stalacmites.yml
+  icicles/
+    - substratum_ceiling_icicles.yml
+    - substratum_giant_ceiling_icicles.yml
+    - substratum_ground_icicles.yml
+```
+
+### Liquid Features
+
+Water, lava, and other liquids:
+
+```yaml
+features/substratum/
+  - water_columns.yml
+  - place_water.yml
+  - lava_pools.yml
+  - cave_lava_columns.yml
+  - magma_streams.yml
+  - ice_cave_pools.yml
+```
+
+### Deposit Features
+
+Ore generation and mineral deposits:
+
+```yaml
+features/deposits/ores/
+  - diamond_ore.yml
+  - iron_ore.yml
+  - gold_ore.yml
+  - copper_ore.yml
+  - emerald_ore.yml
+  # ... more ores
+```
+
+## Example: Diamond Ore Feature
+
+Here's how diamond ore generation is configured:
+
+```yaml
+id: DIAMOND_ORE
+type: FEATURE
+
+anchors:
+  - &structure
+    DIAMOND_ORE_SMALL: 11
+    DIAMOND_ORE: 9
+    DIAMOND_ORE_LARGE: 4
+  - &densityThreshold 1/256 * averageCountPerChunk
+  - &salt 12345
+  - &range
+    min: -64
+    max: 16
+  - &standard-deviation (16 - (-64)) / 6
+
+distributor:
+  type: SAMPLER
+  sampler:
+    type: POSITIVE_WHITE_NOISE
+    salt: *salt
+  threshold: *densityThreshold
+
+locator:
+  type: GAUSSIAN_RANDOM
+  amount: 1
+  height: *range
+  standard-deviation: *standard-deviation
+
+structures:
+  distribution:
+    type: CONSTANT
+  structures: *structure
+```
+
+<Accordion title="Understanding Gaussian Distribution">
+The `GAUSSIAN_RANDOM` locator places ores with a bell curve distribution:
+- Most diamonds spawn near Y=-50 (center of range)
+- Fewer diamonds spawn at Y=-64 and Y=16 (edges)
+- `standard-deviation` controls the spread (wider = more uniform)
+
+The formula `(max - min) / 6` fits ~99.7% of results within the range.
+</Accordion>
+
+## Pattern Types
+
+Patterns define block matching conditions:
+
+### MATCH_SOLID
+```yaml
+pattern:
+  type: MATCH_SOLID
+  offset: 1  # Check block above
+```
+Matches any solid block (not air, water, lava).
+
+### MATCH_AIR
+```yaml
+pattern:
+  type: MATCH_AIR
+  offset: 0  # Check current block
+```
+Matches air blocks only.
+
+### MATCH_BLOCK
+```yaml
+pattern:
+  type: MATCH_BLOCK
+  blocks:
+    - minecraft:stone
+    - minecraft:deepslate
+  offset: -1  # Check block below
+```
+Matches specific block types.
+
+## Offset System
+
+Offsets determine which block relative to the spawn position to check:
+
+- `offset: 1` - Block above (+Y)
+- `offset: 0` - Current block
+- `offset: -1` - Block below (-Y)
+
+<Note>
+For ceiling features (stalactites, icicles), you typically want:
+- `offset: 1` with MATCH_SOLID (ceiling)
+- `offset: 0` with MATCH_AIR (spawn location)
+
+For floor features (stalagmites, vegetation):
+- `offset: -1` with MATCH_SOLID (floor)
+- `offset: 0` with MATCH_AIR (spawn location)
+</Note>
+
+## Distribution Methods
+
+### SAMPLER Distribution
+Uses noise functions for natural-looking distribution:
+
+```yaml
+distributor:
+  type: SAMPLER
+  sampler:
+    type: POSITIVE_WHITE_NOISE
+    salt: 1234
+  threshold: 0.05
+```
+
+### PADDING Distribution
+Ensures minimum spacing between features:
+
+```yaml
+distributor:
+  type: PADDING
+  padding: 16  # Minimum 16 blocks apart
+```
+
+### CONSTANT Distribution
+Places feature at every valid location:
+
+```yaml
+distributor:
+  type: CONSTANT
+```
+
+## Creating a Custom Feature
+
+Let's create a custom glowing mushroom feature:
+
+```yaml
+id: CUSTOM_GLOWING_MUSHROOMS
+type: FEATURE
+
+# Spawn in ~3% of locations
+distributor:
+  type: SAMPLER
+  sampler:
+    type: POSITIVE_WHITE_NOISE
+    salt: 9999
+  threshold: 0.03
+
+# Find floor locations in caves
+locator:
+  type: AND
+  locators:
+    # Solid block below
+    - type: PATTERN
+      range:
+        min: -64
+        max: 300
+      pattern:
+        type: MATCH_SOLID
+        offset: -1
+    # Air at spawn location
+    - type: PATTERN
+      range:
+        min: -64
+        max: 300
+      pattern:
+        type: MATCH_AIR
+        offset: 0
+    # Must be on moss, dirt, or stone
+    - type: PATTERN
+      range:
+        min: -64
+        max: 300
+      pattern:
+        type: MATCH_BLOCK
+        blocks:
+          - minecraft:moss_block
+          - minecraft:dirt
+          - minecraft:stone
+        offset: -1
+
+# Place different sized mushroom clusters
+structures:
+  distribution:
+    type: WHITE_NOISE
+  structures:
+    - small_glowing_mushroom_cluster: 5
+    - medium_glowing_mushroom_cluster: 3
+    - large_glowing_mushroom_cluster: 1
+    - blank: 2
+```
+
+<Accordion title="Explanation">
+- **3% spawn rate** via threshold: 0.03
+- **Floor placement** via offset: -1 MATCH_SOLID
+- **Block filter** ensures mushrooms only grow on appropriate surfaces
+- **Weighted structures** create variety:
+  - 5/11 chance: small cluster
+  - 3/11 chance: medium cluster
+  - 1/11 chance: large cluster
+  - 2/11 chance: nothing (adds natural gaps)
+</Accordion>
+
+## Feature Integration
+
+Features are assigned to biomes through the biome configuration:
+
+```yaml
+# In a biome YAML file
+features:
+  - GIANT_CALCITE_STALACTITES
+  - HANGING_ROOTS
+  - WATER_COLUMNS
+  - DIAMOND_ORE
+```
+
+Features run in the order listed, allowing layered decoration effects.
+
+## Advanced Techniques
+
+### Using Variables and Anchors
+
+YAML anchors allow reusing configuration:
+
+```yaml
+anchors:
+  - &cave_range
+    min: -64
+    max: 300
+  - &common_threshold 0.05
+
+distributor:
+  threshold: *common_threshold
+
+locator:
+  range: *cave_range
+```
+
+### Conditional Features
+
+Use multiple locators to create complex conditions:
+
+```yaml
+locator:
+  type: OR  # Any condition can be true
+  locators:
+    - type: AND  # Near water
+      locators:
+        - type: PATTERN
+          pattern:
+            type: MATCH_BLOCK
+            blocks: [minecraft:water]
+          offset: 1
+    - type: AND  # In humid biome
+      locators:
+        - type: BIOME
+          biomes: [LUSH_CAVES, CORAL_COVES]
+```
+
+## Debugging Features
+
+Common issues and solutions:
+
+### Feature Not Spawning
+1. Check `threshold` - too high = too rare
+2. Verify `locator` patterns match your environment
+3. Ensure `range` includes your test area
+4. Check that structure IDs are valid
+
+### Feature Too Common
+1. Increase `threshold` value
+2. Add more `blank` entries to structures
+3. Add PADDING distributor
+
+### Feature in Wrong Location
+1. Review `offset` values in patterns
+2. Check block matching in MATCH_BLOCK
+3. Verify height range is correct
+
+## See Also
+
+- [Cave Carving System](/advanced/cave-carving-system) - Understand cave generation
+- [Palette System](/advanced/palette-system) - Learn about terrain texturing
+- [Cave Biomes](/biomes/cave-biomes) - Explore cave biome types

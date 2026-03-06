@@ -1,0 +1,341 @@
+---
+title: World Installation
+description: Complete guide for setting up a full Substratum underground world
+---
+
+# World Installation Guide
+
+This guide covers setting up Substratum as your primary world generator, creating a complete underground experience from bedrock to bedrock.
+
+<Note>
+This installation method replaces all overworld generation with Substratum's cave systems. If you want to keep surface biomes and only add Substratum caves underground, use the [Drop-In Merge](/installation/drop-in-merge) method instead.
+</Note>
+
+## Prerequisites
+
+Before beginning, ensure you have:
+
+- Terra plugin/mod installed and working
+- Substratum pack downloaded from [releases](https://github.com/DeathShadez/Substratum/releases)
+- Backup of any existing worlds (if applicable)
+- Server/client stopped (not running)
+
+## Installation Steps
+
+<Steps>
+  <Step title="Install Substratum Pack">
+    Copy the Substratum folder to your Terra packs directory:
+    
+    <CodeGroup>
+    ```bash Bukkit/Spigot/Paper
+    # Navigate to server directory
+    cd /path/to/server
+    
+    # Copy Substratum to Terra packs
+    cp -r /path/to/Substratum plugins/Terra/packs/
+    
+    # Verify installation
+    ls plugins/Terra/packs/Substratum/
+    ```
+    
+    ```bash Fabric Server
+    # Navigate to server directory
+    cd /path/to/server
+    
+    # Copy Substratum to Terra packs
+    cp -r /path/to/Substratum config/Terra/packs/
+    
+    # Verify installation
+    ls config/Terra/packs/Substratum/
+    ```
+    
+    ```bash Fabric Client
+    # Copy to Minecraft config
+    cp -r /path/to/Substratum ~/.minecraft/config/Terra/packs/
+    
+    # Verify installation
+    ls ~/.minecraft/config/Terra/packs/Substratum/
+    ```
+    </CodeGroup>
+    
+    You should see files like `pack.yml`, `substratum_meta.yml`, and folders like `biomes/`, `palettes/`, etc.
+  </Step>
+  
+  <Step title="Configure Bukkit (Bukkit/Spigot/Paper only)">
+    Edit your `bukkit.yml` file to use Substratum as the world generator.
+    
+    <Note>
+    The `bukkit.yml` file is located in your server's root directory (same folder as `server.jar`).
+    </Note>
+    
+    ### Default World Configuration
+    
+    To use Substratum for your default overworld:
+    
+    ```yaml bukkit.yml
+    worlds:
+      world:
+        generator: Terra:SUBSTRATUM
+    ```
+    
+    <Warning>
+    Replace `world` with your world folder name if you're using a custom world name. The world name must match the folder name exactly.
+    </Warning>
+    
+    ### Custom World Name
+    
+    If your world has a different name (e.g., `survival_world`):
+    
+    ```yaml bukkit.yml
+    worlds:
+      survival_world:
+        generator: Terra:SUBSTRATUM
+    ```
+    
+    ### Multiple Worlds with Different Generators
+    
+    You can run multiple Terra packs on different worlds:
+    
+    ```yaml bukkit.yml
+    worlds:
+      world:
+        generator: Terra:OVERWORLD
+      substratum_world:
+        generator: Terra:SUBSTRATUM
+      creative:
+        generator: Terra:SUBSTRATUM
+    ```
+    
+    This configuration runs OverworldConfig on the main world and Substratum on other worlds.
+  </Step>
+  
+  <Step title="Configure Fabric Dimensions (Fabric only)">
+    Fabric users need to manually edit the world's `level.dat` file to apply custom generation to dimensions.
+    
+    <Warning>
+    This step requires an NBT editor like [NBTExplorer](https://github.com/jaquadro/NBTExplorer) or command-line tools. Make a backup of `level.dat` before editing!
+    </Warning>
+    
+    1. Stop your Minecraft client/server
+    2. Navigate to your world folder (e.g., `saves/YourWorld/`)
+    3. Open `level.dat` with an NBT editor
+    4. Modify the generator settings to use Terra with Substratum
+    5. Save and restart
+    
+    For detailed Fabric configuration, see the [Terra Fabric installation guide](https://terra.polydev.org/install/fabric.html).
+  </Step>
+  
+  <Step title="Create/Regenerate World">
+    Now you need to create a new world or regenerate an existing one.
+    
+    ### Creating a New World
+    
+    <Tabs>
+      <Tab title="Bukkit/Spigot/Paper">
+        1. Start your server
+        2. The world will generate automatically with Substratum
+        3. Join the server to test generation
+        
+        Or create a new world manually:
+        ```bash
+        # Stop server, delete old world
+        rm -rf world world_nether world_the_end
+        
+        # Start server - new world generates
+        java -jar server.jar
+        ```
+      </Tab>
+      
+      <Tab title="Fabric">
+        1. Start Minecraft
+        2. Click **Singleplayer** > **Create New World**
+        3. Click **More World Options**
+        4. Set **World Type** to the Terra preset
+        5. Create the world
+      </Tab>
+    </Tabs>
+    
+    <Warning>
+    **Existing Worlds**: You cannot apply Substratum to an already-generated world. Chunks that already exist will remain unchanged. You must either:
+    - Delete the world and regenerate
+    - Explore new chunks (existing chunks keep old generation)
+    - Use world management tools to regenerate specific regions
+    </Warning>
+  </Step>
+  
+  <Step title="Configure Spawn Point (Recommended)">
+    Due to the underground nature of Substratum, spawn point configuration is important.
+    
+    <Warning>
+    Players may spawn at Y=319 (top bedrock layer) or suffocate in blocks. Configure spawn manually to prevent this.
+    </Warning>
+    
+    ### Setting a Safe Spawn
+    
+    <Tabs>
+      <Tab title="Using Commands">
+        1. Join the world
+        2. Find a safe location in a cave (e.g., Y=50 in an open cave)
+        3. Stand at the desired spawn point
+        4. Run: `/setworldspawn` or `/setspawn`
+        
+        On Bukkit servers:
+        ```
+        /setworldspawn
+        ```
+        
+        This sets the world spawn to your current location.
+      </Tab>
+      
+      <Tab title="Manual Configuration">
+        Edit your world's `level.dat` to set specific spawn coordinates:
+        
+        1. Stop the server/client
+        2. Open `level.dat` with an NBT editor
+        3. Set spawn coordinates:
+           - `SpawnX`: X coordinate
+           - `SpawnY`: Y coordinate (recommended: 20-100)
+           - `SpawnZ`: Z coordinate
+        4. Save and restart
+      </Tab>
+    </Tabs>
+  </Step>
+  
+  <Step title="Test Generation">
+    Verify Substratum is working correctly:
+    
+    1. **Check generation**: You should be in an underground cave system
+    2. **Explore biomes**: Use `/terra biome` (if available) to check which cave biome you're in
+    3. **Verify features**: Look for biome-specific features like honeycomb blocks, ice formations, etc.
+    4. **Check Y levels**: The world should have bedrock at Y=-64 and Y=316-319
+    
+    <Note>
+    If you see normal overworld generation (grass, trees, sky), Terra is not using Substratum. Double-check your `bukkit.yml` configuration and restart the server.
+    </Note>
+  </Step>
+</Steps>
+
+## Configuration Options
+
+After installation, customize Substratum by editing `plugins/Terra/packs/Substratum/substratum_meta.yml` (or equivalent path on Fabric).
+
+### Key Configuration Parameters
+
+```yaml substratum_meta.yml
+biome-distribution:
+  global-scale: 1
+  # Multiplier for all biome sizes (2 = double size)
+  
+  cave-scale: 100
+  # Scale of cave foundation generation
+  
+  cave-biome-scale: 200
+  # Scale of cave biome placement (larger = bigger biomes)
+  
+  cave-biome-max: 300
+  # Maximum Y level for Substratum caves
+  
+  cave-biome-min: -63
+  # Minimum Y level for Substratum caves
+```
+
+<Accordion title="Advanced: Strata Layer Configuration">
+```yaml substratum_meta.yml
+strata:
+  deepslate:
+    top: 7      # Y level where deepslate begins
+    bottom: -7  # Y level where all stone becomes deepslate
+  bedrock:
+    top: -60    # Y level where bedrock begins at bottom
+    bottom: -64 # Y level where all blocks are bedrock
+  bedrock-top:
+    top: 319    # Top bedrock layer start
+    bottom: 316 # Top bedrock layer bottom
+```
+
+These values control the Y-level transitions between stone, deepslate, and bedrock layers.
+</Accordion>
+
+## Verification Checklist
+
+After installation, verify everything is working:
+
+- [ ] Substratum pack folder exists in Terra packs directory
+- [ ] `bukkit.yml` (Bukkit) or `level.dat` (Fabric) configured correctly
+- [ ] Server/client restarted after configuration
+- [ ] New world generated with underground terrain
+- [ ] Spawn point set to safe location
+- [ ] Cave biomes generating correctly
+- [ ] No errors in console/logs related to Terra or Substratum
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="World generates normally (not underground)">
+    **Cause**: Terra is not using Substratum as the generator.
+    
+    **Solutions**:
+    - Verify `bukkit.yml` has `generator: Terra:SUBSTRATUM` for the correct world name
+    - Ensure the world name matches the folder name exactly (case-sensitive)
+    - Restart the server after editing `bukkit.yml`
+    - Check console for Terra errors on startup
+    - Verify Terra is loaded (run `/terra version` command)
+  </Accordion>
+  
+  <Accordion title="Spawning at Y=319 (top bedrock)">
+    **Cause**: Default spawn detection places players at the highest solid block.
+    
+    **Solutions**:
+    - Manually set spawn point using `/setworldspawn` at a safe cave location
+    - Use a spawn plugin to control spawn behavior
+    - Edit `level.dat` to set SpawnY to a safe value (e.g., 50-100)
+  </Accordion>
+  
+  <Accordion title="Players suffocating on spawn">
+    **Cause**: Spawn point is inside solid terrain.
+    
+    **Solutions**:
+    - Teleport to safety: `/tp @p ~ 100 ~`
+    - Find an open cave area and set spawn there
+    - Use `/terra locate biome` to find open cave biomes
+    - Consider using a lobby/hub world for initial spawning
+  </Accordion>
+  
+  <Accordion title="Console errors about missing addons">
+    **Cause**: Your Terra version doesn't support required addons.
+    
+    **Solutions**:
+    - Update Terra to the latest version
+    - Check `pack.yml` for required addon versions
+    - Verify addon compatibility with your Terra version
+  </Accordion>
+  
+  <Accordion title="Biomes not generating correctly">
+    **Cause**: Configuration files may be corrupted or modified incorrectly.
+    
+    **Solutions**:
+    - Re-download Substratum pack from releases
+    - Delete and reinstall the pack
+    - Check for YAML syntax errors in modified files
+    - Verify all pack files copied correctly
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+Now that Substratum is installed:
+
+<CardGroup cols={2}>
+  <Card title="Explore Cave Biomes" icon="compass" href="/biomes/overview">
+    Learn about each unique cave biome and what to find there
+  </Card>
+  <Card title="Configuration Guide" icon="gear" href="/configuration/overview">
+    Customize biome distribution, scales, and more
+  </Card>
+  <Card title="Disable Biomes" icon="toggle-off" href="/configuration/disabling-biomes">
+    Remove specific cave biomes you don't want
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/resources/troubleshooting">
+    Solutions to common issues and problems
+  </Card>
+</CardGroup>

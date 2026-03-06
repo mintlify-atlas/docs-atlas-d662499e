@@ -1,0 +1,65 @@
+---
+title: Molten Passages
+description: Volcanic caves with lava streams and charred terrain
+---
+
+Molten Passages are dangerous volcanic cave systems filled with lava, magma, and blackened stone formations.
+
+## Overview
+
+**Biome ID:** `MOLTEN_PASSAGES`  
+**Vanilla Replacement:** `minecraft:dripstone_caves`  
+**Color Code:** `#ED5D53`
+
+## Terrain Palette
+
+Molten Passages feature a dark, volcanic palette:
+
+### Surface Layers (2 blocks deep)
+- Stone
+- Blackstone (primary)
+- Black Concrete Powder
+- Black Concrete
+
+### Subsurface Layer (1 block deep)
+- Stone
+- Blackstone
+- Black Concrete Powder
+- Black Concrete
+
+### Deepslate Transition
+Below Y-level 7, terrain uses the `MOLTEN_PASSAGES_DEEPSLATE` palette.
+
+<Note>
+The dark palette creates dramatic contrast with the bright lava features, enhancing the volcanic atmosphere.
+</Note>
+
+## Features
+
+### Preprocessors
+- **Magma Streams** - Flowing magma formations
+- **Lava Pools** - Large pools of lava
+
+### Landforms
+- **Charred Spikes** - Blackened stone spikes resembling volcanic formations
+
+### Postprocessors
+- **Cave Lava Columns** - Vertical lava flows
+
+## Environment
+
+Molten Passages are among the most hazardous cave biomes, with abundant lava creating constant danger. The charred spikes and blackstone terrain give these caves a volcanic, hellish appearance. These caves feel like natural transition zones to the Nether.
+
+<Warning>
+Exercise extreme caution when exploring Molten Passages due to the high concentration of lava features.
+</Warning>
+
+## Palette Configuration
+
+The terrain generation uses:
+- **Sampler Type:** Cellular with domain warp
+- **Frequency:** 0.8
+- **Warp Frequency:** 0.1
+- **Dimensions:** 2D sampling
+
+Source: `/biomes/cave/substratum/molten_passages.yml:1`

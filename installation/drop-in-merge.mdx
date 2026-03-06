@@ -1,0 +1,414 @@
+---
+title: Drop-In Merge Installation
+description: Guide for merging Substratum caves into existing Terra packs
+---
+
+# Drop-In Merge Installation
+
+The drop-in merge method allows you to add Substratum's unique cave biomes to an existing Terra configuration pack, such as OverworldConfig, while preserving the surface generation.
+
+<Note>
+This method is ideal if you want to enhance underground exploration while keeping your existing surface biomes intact.
+</Note>
+
+## What Gets Merged
+
+When you merge Substratum into another pack:
+
+- **Added**: Substratum's 14 unique cave biomes
+- **Added**: Custom cave features (stalactites, vegetation, structures)
+- **Added**: Biome-specific palettes and decorations
+- **Preserved**: Surface biome generation from your base pack
+- **Preserved**: Existing cave biomes (they'll coexist with Substratum caves)
+- **Configurable**: Y-level ranges where Substratum caves appear
+
+## Prerequisites
+
+<Steps>
+  <Step title="Backup Everything">
+    Before merging, create backups:
+    
+    ```bash
+    # Backup your existing Terra pack
+    cp -r plugins/Terra/packs/YourPack plugins/Terra/packs/YourPack.backup
+    
+    # Backup existing worlds (if applicable)
+    cp -r world world.backup
+    ```
+    
+    <Warning>
+    Merging modifies your existing pack configuration. Always backup first!
+    </Warning>
+  </Step>
+  
+  <Step title="Download Substratum">
+    Download Substratum from the [releases page](https://github.com/DeathShadez/Substratum/releases) and extract it to a temporary location (not directly into Terra packs yet).
+  </Step>
+  
+  <Step title="Identify Target Pack">
+    Determine which Terra pack you're merging into. Common examples:
+    - `TerraOverworldConfig` (vanilla-style generation)
+    - `ReimagEND` (end dimension overhaul)
+    - Custom Terra packs
+    
+    Locate this pack in your Terra packs directory (e.g., `plugins/Terra/packs/TerraOverworldConfig/`).
+  </Step>
+</Steps>
+
+## Merge Installation Steps
+
+<Warning>
+Follow these steps carefully and in order. Skipping steps or doing them incorrectly can cause generation errors.
+</Warning>
+
+<Steps>
+  <Step title="Copy Substratum Files">
+    Copy **every file and folder** from the Substratum pack into your target pack directory.
+    
+    ```bash
+    # Navigate to Substratum pack location
+    cd /path/to/downloaded/Substratum
+    
+    # Copy all files to target pack
+    cp -r * /path/to/server/plugins/Terra/packs/YourTargetPack/
+    ```
+    
+    <Note>
+    When prompted about overwriting files, **skip/ignore duplicates**. You want to keep the target pack's existing files and only add new Substratum files.
+    </Note>
+    
+    ### Files Being Added
+    
+    The merge adds these directories:
+    - `biomes/cave/substratum/` - Substratum cave biome configurations
+    - `palettes/cave/substratum/` - Block palettes for each biome
+    - `features/substratum/` - Custom features and decorations
+    - `structures/` - Substratum-specific structures (if not already present)
+    - `biome-providers/extrusions/add_substratum_cave_biomes.yml` - Biome injection config
+    - `substratum_meta.yml` - Substratum configuration parameters
+  </Step>
+  
+  <Step title="Configure Substratum Parameters">
+    Edit `substratum_meta.yml` in your target pack to adjust cave generation ranges for your pack.
+    
+    ```yaml substratum_meta.yml
+    biome-distribution:
+      cave-biome-max: 300
+      # Maximum Y level for Substratum caves
+      # Substratum Default: 300
+      # OverworldConfig Default: 48
+      
+      cave-biome-min: -63
+      # Minimum Y level for Substratum caves
+      # Substratum Default: -63
+      # OverworldConfig Default: -16
+    ```
+    
+    <Accordion title="Recommended Settings by Pack Type">
+      ### For OverworldConfig (Vanilla-style)
+      
+      ```yaml
+      cave-biome-max: 48
+      cave-biome-min: -16
+      ```
+      
+      This matches vanilla cave generation ranges and prevents Substratum caves from appearing above ground.
+      
+      ### For Amplified/Mountain Packs
+      
+      ```yaml
+      cave-biome-max: 120
+      cave-biome-min: -32
+      ```
+      
+      Allows caves to generate higher in mountains while staying underground.
+      
+      ### For Deep Underground Focus
+      
+      ```yaml
+      cave-biome-max: 0
+      cave-biome-min: -63
+      ```
+      
+      Restricts Substratum to deep caves only, preserving normal caves near surface.
+    </Accordion>
+    
+    <Note>
+    Adjust `cave-biome-scale` if you want larger or smaller cave biomes:
+    - **Larger biomes**: Increase from 200 to 300-400
+    - **Smaller biomes**: Decrease from 200 to 100-150
+    </Note>
+  </Step>
+  
+  <Step title="Add Biome Extrusion to Preset">
+    This is the critical step that actually injects Substratum biomes into your pack's generation.
+    
+    1. **Locate your pack's biome preset file**. Common locations:
+       - OverworldConfig: `biome-providers/presets/default.yml`
+       - Custom packs: Look for YAML files in `biome-providers/presets/`
+    
+    2. **Open the preset file** and find the `extrusions:` section.
+    
+    3. **Add the Substratum extrusion** to the extrusions list:
+    
+    ```yaml biome-providers/presets/default.yml
+    biomes:
+      type: EXTRUSION
+      extrusions:
+        - << biome-providers/extrusions/existing_extrusion.yml:extrusions
+        - << biome-providers/extrusions/another_extrusion.yml:extrusions
+        # Add this line:
+        - << biome-providers/extrusions/add_substratum_cave_biomes.yml:extrusions
+      provider:
+        # ... rest of configuration
+    ```
+    
+    <Warning>
+    **YAML Syntax is Critical**
+    - Maintain exact indentation (use spaces, not tabs)
+    - The `<<` and `:extrusions` parts must be exactly as shown
+    - Each extrusion line must start with `- <<` (dash, space, angle brackets)
+    - File path must match the actual file location in your pack
+    </Warning>
+    
+    ### Example: OverworldConfig Integration
+    
+    ```yaml TerraOverworldConfig/biome-providers/presets/default.yml
+    biomes:
+      type: EXTRUSION
+      extrusions:
+        - << biome-providers/extrusions/add_deep_dark.yml:extrusions
+        - << biome-providers/extrusions/add_cave_biomes.yml:extrusions
+        - << biome-providers/extrusions/add_substratum_cave_biomes.yml:extrusions  # Added
+      provider:
+        type: PIPELINE
+        resolution: 4
+        # ... rest of config
+    ```
+  </Step>
+  
+  <Step title="Verify Configuration Files">
+    Check for YAML syntax errors before starting:
+    
+    ```bash
+    # If you have yamllint installed
+    yamllint plugins/Terra/packs/YourPack/biome-providers/presets/default.yml
+    yamllint plugins/Terra/packs/YourPack/substratum_meta.yml
+    ```
+    
+    Or use an online YAML validator to check syntax.
+    
+    <Note>
+    Terra will log errors on startup if YAML files have syntax issues. Check your server console carefully.
+    </Note>
+  </Step>
+  
+  <Step title="Test the Merge">
+    Now test that Substratum biomes are generating:
+    
+    1. **Restart your server/client** to reload Terra configurations
+    2. **Generate new chunks** by exploring areas you haven't visited
+    3. **Go underground** and explore caves at various Y levels
+    4. **Look for Substratum features**:
+       - Unique block palettes (honeycomb, terracotta, marble)
+       - Custom vegetation (hanging vines, mushrooms)
+       - Biome-specific decorations
+    
+    <Warning>
+    Already-generated chunks will NOT change. You must explore new areas or regenerate the world to see Substratum biomes.
+    </Warning>
+    
+    ### Testing Commands
+    
+    If Terra provides debug commands:
+    
+    ```
+    /terra biome        # Check current biome name
+    /terra locate biome # Find nearest biome of type
+    ```
+    
+    You should see Substratum biome names like `HONEY_GROTTO`, `FROZEN_CAVERNS`, etc.
+  </Step>
+</Steps>
+
+## Advanced Configuration
+
+### Adjusting Biome Weights
+
+Control how often each Substratum biome generates by editing `biome-providers/extrusions/add_substratum_cave_biomes.yml`:
+
+```yaml add_substratum_cave_biomes.yml
+extrusions:
+  - type: REPLACE
+    from: LAND_CAVES
+    to:
+      - SELF: 6          # Original cave biomes (6x weight)
+      - HONEY_GROTTO: 1  # Rare
+      - FROZEN_CAVERNS: 2  # More common (increased from 1 to 2)
+      - MOLTEN_PASSAGES: 1
+      # ... other biomes
+```
+
+<Note>
+Higher numbers = more common. `SELF: 6` means original cave biomes are 6x more likely than Substratum biomes with weight 1.
+</Note>
+
+### Disabling Specific Biomes
+
+To disable a biome you don't want, comment it out with `#`:
+
+```yaml
+to:
+  - SELF: 6
+  - HONEY_GROTTO: 1
+  #- FROZEN_CAVERNS: 1  # Disabled
+  - MOLTEN_PASSAGES: 1
+```
+
+See the [Disabling Biomes guide](/configuration/disabling-biomes) for more details.
+
+### Enabling Coral Coves
+
+Coral Coves is disabled by default due to border issues. To enable:
+
+```yaml add_substratum_cave_biomes.yml
+to:
+  - SELF: 6
+  # ... other biomes
+  - CORAL_COVES: 1  # Uncommented (removed #)
+```
+
+<Warning>
+Coral Coves has messy biome borders and may not blend well with adjacent biomes. Enable at your own risk.
+</Warning>
+
+## Common Merge Targets
+
+### OverworldConfig (Vanilla-style)
+
+**Pack ID**: `OVERWORLD`
+
+**Recommended Settings**:
+```yaml substratum_meta.yml
+cave-biome-max: 48
+cave-biome-min: -16
+cave-biome-scale: 200
+```
+
+**Preset File**: `biome-providers/presets/default.yml`
+
+### Custom Packs
+
+For custom Terra packs:
+1. Identify the pack's biome preset file
+2. Check existing cave Y-level ranges
+3. Set Substratum ranges to match or be slightly smaller
+4. Test thoroughly in a test world first
+
+## Troubleshooting Merge Issues
+
+<AccordionGroup>
+  <Accordion title="Substratum biomes not generating">
+    **Possible Causes**:
+    - Extrusion not added to preset file correctly
+    - YAML syntax error in configuration
+    - Y-level ranges set outside where caves generate
+    - Testing in already-generated chunks
+    
+    **Solutions**:
+    1. Check console for Terra errors on startup
+    2. Verify extrusion line in preset file (exact syntax)
+    3. Ensure `cave-biome-max` and `cave-biome-min` overlap with pack's cave ranges
+    4. Generate new chunks in unexplored areas
+    5. Validate YAML syntax with a linter
+  </Accordion>
+  
+  <Accordion title="Console errors about missing biomes">
+    **Cause**: Substratum biome files didn't copy correctly.
+    
+    **Solutions**:
+    - Re-copy all Substratum files to target pack
+    - Verify `biomes/cave/substratum/` directory exists
+    - Check that all `.yml` files are present in that directory
+    - Ensure file permissions are correct (readable by server)
+  </Accordion>
+  
+  <Accordion title="Weird biome transitions/borders">
+    **Cause**: Biome blending settings may need adjustment.
+    
+    **Solutions**:
+    - This is expected behavior with complex biome systems
+    - Increase `cave-biome-scale` for larger, more uniform biome areas
+    - Some biomes (like Coral Coves) have inherent border issues
+    - Adjust blend settings in preset file (advanced)
+  </Accordion>
+  
+  <Accordion title="Features generating in wrong biomes">
+    **Cause**: Feature files may have conflicts with base pack.
+    
+    **Solutions**:
+    - Check for duplicate feature definitions
+    - Ensure Substratum feature files aren't overwriting base pack features
+    - Review `features/` directory for conflicts
+    - Rename conflicting feature files if necessary
+  </Accordion>
+  
+  <Accordion title="Pack ID conflicts">
+    **Cause**: Substratum's pack ID conflicts with target pack.
+    
+    **Solutions**:
+    - Edit `pack.yml` in merged pack
+    - Change `id:` to something unique (e.g., `OVERWORLD_SUBSTRATUM`)
+    - Update `bukkit.yml` to use new pack ID
+    - Restart server
+  </Accordion>
+</AccordionGroup>
+
+## Verification Checklist
+
+- [ ] All Substratum files copied to target pack
+- [ ] Duplicate files skipped (not overwritten)
+- [ ] `substratum_meta.yml` configured with appropriate Y-level ranges
+- [ ] Extrusion line added to biome preset file
+- [ ] YAML syntax validated (no errors)
+- [ ] Server restarted after configuration changes
+- [ ] New chunks generated in unexplored areas
+- [ ] Substratum biomes found underground
+- [ ] No console errors related to Terra or biomes
+- [ ] Features generating correctly in Substratum biomes
+
+## Reverting the Merge
+
+If you need to undo the merge:
+
+1. Stop your server/client
+2. Delete the merged pack directory
+3. Restore from your backup:
+   ```bash
+   rm -rf plugins/Terra/packs/YourPack
+   cp -r plugins/Terra/packs/YourPack.backup plugins/Terra/packs/YourPack
+   ```
+4. Restart
+
+<Note>
+Already-generated chunks with Substratum biomes will remain. You'll need to regenerate those regions or delete the world to fully revert.
+</Note>
+
+## Next Steps
+
+After successfully merging Substratum:
+
+<CardGroup cols={2}>
+  <Card title="Cave Biomes Reference" icon="book" href="/biomes/overview">
+    Learn about each Substratum cave biome
+  </Card>
+  <Card title="Biome Distribution" icon="sliders" href="/configuration/biome-distribution">
+    Fine-tune biome sizes and frequencies
+  </Card>
+  <Card title="Disable Biomes" icon="ban" href="/configuration/disabling-biomes">
+    Remove specific biomes from generation
+  </Card>
+  <Card title="Troubleshooting" icon="life-ring" href="/resources/troubleshooting">
+    Get help with common issues
+  </Card>
+</CardGroup>

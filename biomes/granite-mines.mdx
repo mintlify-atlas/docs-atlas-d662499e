@@ -1,0 +1,53 @@
+---
+title: Granite Mines
+description: Reddish caves featuring granite stone
+---
+
+Granite Mines are reddish-brown caves where granite stone is naturally abundant, creating warm-toned underground chambers.
+
+## Overview
+
+**Biome ID:** `GRANITE_MINES`  
+**Vanilla Replacement:** `minecraft:dripstone_caves`  
+**Color Code:** `#A77663`
+
+## Terrain Palette
+
+Granite Mines feature a simple two-material palette:
+
+### Surface Layers (2 blocks deep)
+- Stone (dominant - 3 parts)
+- Granite (1 part)
+
+### Subsurface Layer (1 block deep)
+- Stone (dominant - 3 parts)
+- Granite (1 part)
+
+### Deepslate Transition
+Below Y-level 7, terrain uses the `GRANITE_MINES_DEEPSLATE` palette.
+
+<Note>
+Granite appears at a 1:3 ratio with stone, creating veins and pockets throughout the cave system.
+</Note>
+
+## Features
+
+Granite Mines are primarily defined by their terrain palette and do not include additional feature decorations.
+
+## Environment
+
+Granite Mines offer a straightforward mining-focused cave biome. The reddish-brown granite creates warm color accents throughout otherwise standard stone caves. These biomes feel like natural underground quarries where granite is readily accessible.
+
+<Note>
+This biome is ideal for gathering large amounts of granite for building projects without needing to search for scattered pockets.
+</Note>
+
+## Palette Configuration
+
+The terrain generation uses:
+- **Sampler Type:** Cellular with domain warp
+- **Frequency:** 0.08 (surface), 0.8 (subsurface)
+- **Warp Frequency:** 0.01 (surface), 0.1 (subsurface)
+- **Dimensions:** 2D sampling
+
+Source: `/biomes/cave/substratum/granite_mines.yml:1`

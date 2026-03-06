@@ -1,0 +1,168 @@
+---
+title: Installation Overview
+description: Choose the right installation method for your needs
+---
+
+# Installation Overview
+
+Substratum offers two distinct installation methods depending on your use case. This guide will help you choose the right approach and understand what each method entails.
+
+## Installation Methods
+
+<CardGroup cols={2}>
+  <Card title="World Installation" icon="globe" href="/installation/world-installation">
+    Create a complete underground world where Substratum is the primary terrain generator
+  </Card>
+  <Card title="Drop-In Merge" icon="layer-group" href="/installation/drop-in-merge">
+    Add Substratum's cave biomes to an existing Terra pack for enhanced underground variety
+  </Card>
+</CardGroup>
+
+## Choosing Your Installation Method
+
+### World Installation
+
+**Best for:**
+- Creating dedicated underground survival worlds
+- Players who want the full Substratum experience
+- Servers focused on cave exploration and underground gameplay
+- Testing and showcasing all Substratum biomes
+
+**What you get:**
+- Entire world generated as interconnected cave systems
+- Terrain from Y=-64 (bedrock) to Y=319 (top bedrock layer)
+- All 14 Substratum cave biomes (plus optional Coral Coves)
+- No surface generation - pure underground experience
+
+<Note>
+World installation replaces the default overworld generation entirely. The world will be underground from bedrock to bedrock.
+</Note>
+
+### Drop-In Merge Installation
+
+**Best for:**
+- Enhancing existing Terra packs with unique underground biomes
+- Adding variety to vanilla-style worlds (e.g., OverworldConfig)
+- Keeping surface generation while upgrading caves
+- Modpack creators wanting diverse cave systems
+
+**What you get:**
+- Substratum cave biomes added to your existing pack's underground
+- Surface biomes remain unchanged
+- Configurable Y-level ranges for where Substratum caves appear
+- Mix of your pack's caves and Substratum's unique biomes
+
+<Warning>
+Drop-in merge requires careful file management and configuration. Make sure to follow the merge guide closely to avoid conflicts.
+</Warning>
+
+## Prerequisites
+
+Before installing Substratum, ensure you have:
+
+<Steps>
+  <Step title="Terra Plugin/Mod Installed">
+    Install Terra for your platform:
+    - **Bukkit/Spigot/Paper**: Download the Terra plugin from [SpigotMC](https://www.spigotmc.org/resources/terra.85151/) or [Modrinth](https://modrinth.com/plugin/terra)
+    - **Fabric**: Download the Terra mod from [Modrinth](https://modrinth.com/mod/terra) or [CurseForge](https://www.curseforge.com/minecraft/mc-mods/terra)
+    
+    See the [Terra installation guide](https://terra.polydev.org/install/index.html) for detailed instructions.
+  </Step>
+  
+  <Step title="Download Substratum Pack">
+    Get Substratum from one of these sources:
+    - **[Releases Page](https://github.com/DeathShadez/Substratum/releases)** - Stable, tested versions (recommended)
+    - **[Main Branch](https://github.com/DeathShadez/Substratum)** - Latest changes, may be unstable
+    
+    Extract the downloaded pack to your Terra packs directory.
+  </Step>
+  
+  <Step title="Backup Existing Worlds (if applicable)">
+    If merging into an existing pack or world:
+    - Backup your world files
+    - Backup your Terra pack configurations
+    - Document any custom changes you've made
+  </Step>
+</Steps>
+
+## Terra Packs Directory
+
+You'll need to know where Terra stores configuration packs:
+
+<CodeGroup>
+```bash Bukkit/Spigot/Paper
+# Default location
+plugins/Terra/packs/
+
+# Place Substratum folder here
+plugins/Terra/packs/Substratum/
+```
+
+```bash Fabric (Server)
+# Default location
+config/Terra/packs/
+
+# Place Substratum folder here
+config/Terra/packs/Substratum/
+```
+
+```bash Fabric (Client)
+# Default location
+.minecraft/config/Terra/packs/
+
+# Place Substratum folder here
+.minecraft/config/Terra/packs/Substratum/
+```
+</CodeGroup>
+
+## Version Information
+
+<Note>
+**Current Version**: 1.6.0
+
+**Terra Compatibility**: Requires Terra with support for:
+- biome-provider-pipeline-v2
+- chunk-generator-noise-3d
+- biome-provider-extrusion
+- And other addons listed in `pack.yml`
+
+Ensure your Terra version supports these addons before installing.
+</Note>
+
+## Platform-Specific Notes
+
+### Bukkit/Spigot/Paper
+
+- Configuration is done through `bukkit.yml`
+- Supports multiple worlds with different generators
+- Easier to configure and manage
+- No file editing required for dimension support
+
+### Fabric
+
+- Requires editing `level.dat` for custom dimension generation
+- Configuration is more technical
+- May need additional tools like NBT editors
+- Fabric users should be comfortable with manual file editing
+
+## Next Steps
+
+Choose your installation path:
+
+<CardGroup cols={2}>
+  <Card title="World Installation Guide" icon="arrow-right" href="/installation/world-installation">
+    Set up a complete Substratum world
+  </Card>
+  <Card title="Drop-In Merge Guide" icon="arrow-right" href="/installation/drop-in-merge">
+    Merge Substratum into an existing pack
+  </Card>
+</CardGroup>
+
+## Need Help?
+
+If you encounter issues during installation:
+
+- Check the [Troubleshooting guide](/resources/troubleshooting)
+- Review the [FAQ](/resources/faq)
+- Visit the [GitHub Issues](https://github.com/DeathShadez/Substratum/issues)
+- Join the Terra Discord community for support

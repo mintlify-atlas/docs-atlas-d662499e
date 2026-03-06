@@ -1,0 +1,121 @@
+---
+title: Introduction to Substratum
+description: Discover a completely underground world filled with unique cave biomes to explore
+---
+
+# Welcome to Substratum
+
+Substratum is a Terra configuration pack that transforms Minecraft into a completely underground experience. Instead of traditional surface biomes, you'll explore an expansive subterranean realm filled with diverse cave systems, each with unique terrain, resources, and challenges.
+
+<img
+  src="https://github.com/user-attachments/assets/ba73e713-d793-428f-a0fb-acad97912591"
+  alt="Substratum underground world"
+/>
+
+## What is Substratum?
+
+Substratum is built on the [Terra](https://terra.polydev.org) world generation platform, creating a fully underground world that spans from bedrock to bedrock. The entire overworld becomes a massive cave system with interconnected biomes, each offering distinct visual styles, blocks, and exploration opportunities.
+
+<CardGroup cols={2}>
+  <Card title="Full World Generation" icon="globe">
+    Generate entire worlds as underground cave systems from Y=-64 to Y=319
+  </Card>
+  <Card title="Drop-In Compatibility" icon="puzzle-piece">
+    Add Substratum caves to existing Terra packs for enhanced underground diversity
+  </Card>
+  <Card title="14 Unique Biomes" icon="mountain">
+    Explore diverse cave environments from frozen caverns to molten passages
+  </Card>
+  <Card title="Custom Features" icon="sparkles">
+    Discover unique structures, vegetation, and terrain formations in each biome
+  </Card>
+</CardGroup>
+
+## Key Features
+
+### Diverse Cave Biomes
+
+Substratum includes 14 unique cave biomes, each with distinctive characteristics:
+
+- **Honey Grotto** - Honeycomb-filled caves with giant bee nests
+- **Frozen Caverns** - Icy caves with blue ice, powder snow, and icicles
+- **Molten Passages** - Lava-filled tunnels with magma blocks and basalt
+- **Fungal Undergrowth** - Mushroom-covered caves with giant fungi
+- **Amethyst Hollow** - Crystalline caves with amethyst clusters
+- **Subterranean Mesa** - Underground badlands with terracotta layers
+- **Marble Mines** - Calcite-rich caves with unique formations
+- **Granite/Andesite/Diorite Mines** - Stone variant cave systems
+- **And more...**
+
+<Note>
+Coral Coves biome is disabled by default due to border blending issues. You can enable it by uncommenting the biome in `add_substratum_cave_biomes.yml`.
+</Note>
+
+### Customizable Configuration
+
+Substratum offers extensive customization through the `substratum_meta.yml` file:
+
+- **Biome Distribution Scale** - Control the size of cave biomes (default: 200)
+- **Cave Scale** - Adjust overall cave system size (default: 100)
+- **Height Ranges** - Configure min/max Y levels for cave generation
+- **Strata Layers** - Customize deepslate and bedrock layer positions
+
+### Compatible with Existing Packs
+
+Substratum can be used in two ways:
+
+1. **World Installation** - Generate complete underground worlds
+2. **Drop-In Merge** - Add Substratum caves to existing Terra packs like OverworldConfig
+
+## Technical Details
+
+<AccordionGroup>
+  <Accordion title="Supported Platforms">
+    - **Bukkit/Spigot/Paper** - Full support with bukkit.yml configuration
+    - **Fabric** - Requires level.dat editing for custom generation
+    
+    Both platforms use Terra as the world generation engine.
+  </Accordion>
+  
+  <Accordion title="Version Information">
+    - **Pack Version**: 1.6.0
+    - **Author**: RogueShade
+    - **Generator**: NOISE_3D
+    - **Terra Addons**: Uses biome-provider-pipeline-v2, chunk-generator-noise-3d, and many others
+  </Accordion>
+  
+  <Accordion title="Resource Attribution">
+    Substratum incorporates resources from:
+    - [OverworldConfig](https://github.com/PolyhedralDev/TerraOverworldConfig)
+    - [ReimagEnd](https://github.com/justaureus/ReimagEND)
+  </Accordion>
+</AccordionGroup>
+
+## Known Issues
+
+<Warning>
+Be aware of these potential issues when using Substratum:
+
+- **Spawn Location**: Players may spawn at the top bedrock layer (Y=319) depending on world generation method
+- **Spawn Suffocation**: Initial spawn might occur in solid blocks - configure spawn points manually if needed
+- **Coral Coves**: This biome has messy borders and is disabled by default for stability
+</Warning>
+
+## Getting Started
+
+Ready to explore the underground? Check out the installation guides:
+
+<CardGroup cols={2}>
+  <Card title="Installation Overview" icon="book" href="/installation/overview">
+    Learn about installation options and choose the right method for you
+  </Card>
+  <Card title="World Installation" icon="globe" href="/installation/world-installation">
+    Set up a complete Substratum world from scratch
+  </Card>
+  <Card title="Drop-In Merge" icon="layer-group" href="/installation/drop-in-merge">
+    Add Substratum caves to your existing Terra pack
+  </Card>
+  <Card title="Cave Biomes" icon="mountain" href="/biomes/overview">
+    Explore detailed information about each cave biome
+  </Card>
+</CardGroup>

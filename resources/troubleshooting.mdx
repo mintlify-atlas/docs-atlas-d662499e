@@ -1,0 +1,265 @@
+---
+title: "Troubleshooting"
+description: "Common issues and solutions for Substratum"
+---
+
+This guide covers common issues you may encounter when using Substratum and provides solutions to resolve them.
+
+## Known Issues
+
+<Warning>
+  Substratum has several known spawn-related issues that may affect initial world generation. These are listed below with workarounds.
+</Warning>
+
+### Bedrock Layer Spawning
+
+**Issue**: Players may spawn at the top bedrock layer (Y: 316-319) instead of within the cave system.
+
+**Cause**: This occurs depending on how the world is generated and the spawn point calculation method used by your server platform.
+
+**Solutions**:
+
+1. **Manual teleportation**: Use the following command to teleport players to a safe underground location:
+   ```
+   /tp @p ~ 100 ~
+   ```
+
+2. **Spawn adjustment**: Configure your server's spawn settings to force players to spawn at a specific Y-level (recommended: Y: 50-150).
+
+3. **Plugin solution**: Use a spawn control plugin (for Bukkit/Spigot/Paper) to override the default spawn behavior.
+
+### Player Suffocation on Spawn
+
+**Issue**: Players may suffocate upon initial spawn due to spawning inside solid blocks.
+
+**Cause**: The spawn point calculation may place players inside terrain before the underground caves have fully generated in the spawn chunks.
+
+**Solutions**:
+
+1. **Pre-generate spawn chunks**: Use a world pre-generation plugin or tool to generate spawn chunks before players join:
+   ```
+   /worldborder center ~ ~
+   /worldborder set 1000
+   /chunky worldborder
+   /chunky start
+   ```
+
+2. **Safe spawn plugin**: Install a plugin that ensures players spawn in a safe location with air blocks.
+
+3. **Manual intervention**: Temporarily give players creative mode or resistance effects during first spawn.
+
+### Coral Coves Border Issues
+
+**Issue**: Coral Coves biome has messy borders and doesn't integrate well with other biomes.
+
+**Status**: This biome is **disabled by default** in Substratum.
+
+<Note>
+  Coral Coves is an experimental biome that has known issues with biome blending. It remains in the pack but is commented out in the biome distribution configuration.
+</Note>
+
+**Re-enabling (not recommended)**: If you want to enable Coral Coves despite the issues, edit `biome-providers/extrusions/add_substratum_cave_biomes.yml` and uncomment the Coral Coves entry.
+
+**Merging with other packs**: Be especially cautious when merging Substratum with other Terra packs if you plan to enable Coral Coves, as border issues may be amplified.
+
+## Installation Issues
+
+### Terra Not Loading Config
+
+**Issue**: Server doesn't recognize or load the Substratum config pack.
+
+**Solutions**:
+
+1. **Verify installation path**: Ensure Substratum is installed in the correct directory:
+   - Bukkit/Spigot/Paper: `plugins/Terra/packs/Substratum/`
+   - Fabric: `config/Terra/packs/Substratum/`
+
+2. **Check pack.yml**: Verify that `pack.yml` exists in the Substratum root directory and is properly formatted.
+
+3. **Server logs**: Check your server console for Terra errors during startup. Look for lines containing `[Terra]`.
+
+4. **Reload Terra**: Try reloading Terra after installation:
+   ```
+   /terra reload
+   ```
+
+### Wrong Generator Applied
+
+**Issue**: The world is generating with vanilla terrain instead of Substratum caves.
+
+**Solutions**:
+
+1. **Verify bukkit.yml**: For Bukkit-based servers, ensure your `bukkit.yml` is correctly configured:
+   ```yaml
+   worlds:
+     world:
+       generator: Terra:SUBSTRATUM
+   ```
+
+2. **World must be new**: Terra generators can only be applied to **newly generated worlds**. You cannot convert existing worlds.
+
+3. **Delete and regenerate**: If you've already generated a world with the wrong generator:
+   - Stop the server
+   - Delete the world folder(s)
+   - Update bukkit.yml
+   - Start the server to generate a new world
+
+4. **Fabric level.dat**: On Fabric, you must manually edit the `level.dat` file to apply custom generation. See the [Terra documentation](https://terra.polydev.org/install/fabric.html) for details.
+
+### End Dimension Not Generating
+
+**Issue**: The End dimension uses vanilla generation instead of ReimagEND features.
+
+**Platform-specific solutions**:
+
+<AccordionGroup>
+  <Accordion title="Bukkit/Spigot/Paper" icon="server">
+    Add the End dimension to your `bukkit.yml`:
+    ```yaml
+    worlds:
+      world:
+        generator: Terra:SUBSTRATUM
+      world_the_end:
+        generator: Terra:SUBSTRATUM
+    ```
+  </Accordion>
+  
+  <Accordion title="Fabric" icon="cubes">
+    Fabric requires manual `level.dat` editing to apply custom End generation. This is a limitation of the Fabric platform. See the [Terra Fabric installation guide](https://terra.polydev.org/install/fabric.html) for step-by-step instructions.
+  </Accordion>
+</AccordionGroup>
+
+## Drop-In Merge Issues
+
+### Duplicate Files During Merge
+
+**Issue**: When copying Substratum files into another pack, file conflicts occur.
+
+**Solution**: You should **skip and ignore duplicate files** during the copy process. Substratum is designed to merge cleanly with packs like OverworldConfig without overwriting shared dependencies.
+
+**Files to skip**:
+- `pack.yml` (keep the existing pack's version)
+- Any Terra core files that already exist
+- Shared utility configurations
+
+### Cave Biomes Not Appearing
+
+**Issue**: After merging, Substratum cave biomes don't appear in your existing pack.
+
+**Solutions**:
+
+1. **Add the extrusion**: Edit your pack's preset file (e.g., `biome-providers/presets/default.yml`) and add:
+   ```yaml
+   extrusions:
+     - << biome-providers/extrusions/add_substratum_cave_biomes.yml:extrusions
+   ```
+
+2. **Configure Y-levels**: Edit `substratum_meta.yml` to adjust the Y-level ranges for cave biome generation to match your pack's requirements:
+   ```yaml
+   cave-biome-max: 48  # Adjust based on your pack
+   cave-biome-min: -16  # Adjust based on your pack
+   ```
+
+3. **Check biome scale**: If caves are too rare or too common, adjust the `cave-biome-scale` parameter in `substratum_meta.yml`.
+
+### Biome Blending Issues
+
+**Issue**: Harsh transitions between Substratum caves and the host pack's caves or surface biomes.
+
+**Solutions**:
+
+1. **Adjust biome scale**: Increase `cave-biome-scale` in `substratum_meta.yml` for larger, more gradual biome transitions:
+   ```yaml
+   cave-biome-scale: 300  # Larger = smoother transitions
+   ```
+
+2. **Disable problematic biomes**: Comment out specific biomes in `biome-providers/extrusions/add_substratum_cave_biomes.yml` if they clash with your pack's aesthetic.
+
+3. **Review pack compatibility**: Some packs may have incompatible cave generation systems. Check the host pack's documentation for known conflicts.
+
+## Performance Issues
+
+### Low FPS in Caves
+
+**Issue**: Frame rate drops significantly when exploring Substratum caves.
+
+**Causes and solutions**:
+
+1. **Complex decorations**: Substratum caves feature detailed decorations (stalactites, icicles, giant structures). Consider:
+   - Reducing render distance
+   - Using optimization mods like Sodium (Fabric) or Optifine (Forge)
+   - Disabling some decoration features
+
+2. **Lighting updates**: Underground caves require extensive lighting calculations:
+   - Use Phosphor or Starlight mods for faster lighting
+   - Pre-generate chunks to reduce runtime lighting updates
+
+### Server Lag During Generation
+
+**Issue**: Server TPS drops when players explore new cave areas.
+
+**Solutions**:
+
+1. **Pre-generate terrain**: Use a chunk pre-generation plugin to generate the world before players explore:
+   - **Chunky** (recommended): `/chunky radius 5000` then `/chunky start`
+   - **WorldBorder**: Set a world border and pre-generate to the edge
+
+2. **Reduce biome complexity**: Disable feature-heavy biomes in `add_substratum_cave_biomes.yml` by commenting them out with `#`.
+
+3. **Allocate more RAM**: Ensure your server has adequate memory allocated (recommended: 4GB minimum for small servers, 8GB+ for larger servers).
+
+## Configuration Issues
+
+### Biomes Too Large or Too Small
+
+**Issue**: Cave biomes generate at an undesirable scale.
+
+**Solution**: Adjust the scale parameters in `substratum_meta.yml`:
+
+```yaml
+biome-distribution:
+  global-scale: 1        # Affects everything
+  cave-biome-scale: 200  # Affects cave biome size specifically
+```
+
+- **Increase** the scale for larger biomes
+- **Decrease** the scale for smaller, more varied biomes
+
+### Strata Layers at Wrong Y-Levels
+
+**Issue**: Deepslate or bedrock appears at incorrect heights.
+
+**Solution**: Configure strata levels in `substratum_meta.yml`:
+
+```yaml
+strata:
+  deepslate:
+    top: 7     # Y level where deepslate begins to replace stone
+    bottom: -7  # Y level where all stone is replaced by deepslate
+  bedrock:
+    top: -60   # Y level where bedrock begins to replace deepslate
+    bottom: -64 # Y level where all deepslate is replaced by bedrock
+```
+
+## Getting Help
+
+If you encounter issues not covered in this guide:
+
+<CardGroup cols={2}>
+  <Card title="GitHub Issues" icon="github" href="https://github.com/DeathShadez/Substratum/issues">
+    Report bugs or request features on the official GitHub repository
+  </Card>
+  
+  <Card title="Terra Documentation" icon="book" href="https://terra.polydev.org">
+    Consult the official Terra documentation for platform-specific help
+  </Card>
+</CardGroup>
+
+<Note>
+  When reporting issues, please include:
+  - Your server platform and version (Paper 1.20.1, Fabric 1.19.4, etc.)
+  - Terra version
+  - Substratum version
+  - Relevant logs or error messages
+  - Steps to reproduce the issue
+</Note>

@@ -1,0 +1,623 @@
+---
+title: Palette System
+description: Understanding how terrain palettes work in Substratum cave biomes
+---
+
+Palettes define the block composition of cave walls, floors, and ceilings in Substratum. The palette system uses layered noise-based material selection to create varied, natural-looking terrain.
+
+## Palette Basics
+
+A palette is a YAML configuration that defines:
+
+- **Layers**: Multiple layers of materials applied from top to bottom
+- **Materials**: Block types and their weighted distribution
+- **Samplers**: Noise functions that control material placement
+
+<Note>
+Palettes run **after cave carving** but **before features**, providing the base terrain that features decorate.
+</Note>
+
+## Palette Structure
+
+Here's a complete palette example from Frozen Caverns:
+
+```yaml
+id: FROZEN_CAVERNS
+type: PALETTE
+
+layers:
+  - materials:
+      - minecraft:stone: 1
+      - minecraft:snow_block: 3
+      - minecraft:packed_ice: 2
+      - minecraft:blue_ice: 1
+      - minecraft:snow_block: 3
+    layers: 2
+    sampler:
+      dimensions: 2
+      type: DOMAIN_WARP
+      amplitude: 4
+      warp:
+        type: OPEN_SIMPLEX_2
+        frequency: 0.01
+      sampler:
+        type: CELLULAR
+        return: CellValue
+        frequency: 0.08
+  - materials:
+      - minecraft:stone: 1
+      - minecraft:packed_ice: 2
+      - minecraft:blue_ice: 1
+      - minecraft:snow_block: 3
+    layers: 1
+    sampler:
+      dimensions: 2
+      type: DOMAIN_WARP
+      amplitude: 4
+      warp:
+        type: OPEN_SIMPLEX_2
+        frequency: 0.1
+      sampler:
+        type: CELLULAR
+        return: CellValue
+        frequency: 0.8
+```
+
+## Layer System
+
+Palettes apply materials in layers from the exposed surface inward:
+
+```yaml
+layers:
+  - materials: [...]  # Layer 1: Surface blocks (depth 2)
+    layers: 2
+  - materials: [...]  # Layer 2: Subsurface blocks (depth 1)
+    layers: 1
+```
+
+### Layer Depth
+
+The `layers` parameter controls how many blocks deep this layer extends:
+
+- `layers: 1` - Single block thick
+- `layers: 2` - Two blocks thick
+- `layers: 3` - Three blocks thick
+
+<Accordion title="How Layers Stack">
+Consider a cave wall:
+
+```
+[Air] <- Cave interior
+[Layer 1, Block 1] <- Surface (layers: 2)
+[Layer 1, Block 2]
+[Layer 2, Block 1] <- Subsurface (layers: 1)
+[Stone] <- Base terrain
+```
+
+The first layer creates the visible surface texture, while deeper layers provide subsurface variation.
+</Accordion>
+
+## Material Weights
+
+Materials within a layer use weighted random selection:
+
+```yaml
+materials:
+  - minecraft:stone: 1
+  - minecraft:snow_block: 3
+  - minecraft:packed_ice: 2
+  - minecraft:blue_ice: 1
+```
+
+**Weight Calculation:**
+- Total weight: 1 + 3 + 2 + 1 = 7
+- Stone: 1/7 = 14.3%
+- Snow: 3/7 = 42.9%
+- Packed Ice: 2/7 = 28.6%
+- Blue Ice: 1/7 = 14.3%
+
+<Note>
+Higher weights mean the material appears more frequently. A weight of 0 effectively disables that material.
+</Note>
+
+## Sampler System
+
+Samplers control the spatial distribution of materials using noise functions.
+
+### Basic Sampler
+
+```yaml
+sampler:
+  dimensions: 2
+  type: CELLULAR
+  return: CellValue
+  frequency: 0.08
+```
+
+**Parameters:**
+- `dimensions`: 2 (X/Z) or 3 (X/Y/Z)
+- `type`: Noise algorithm
+- `frequency`: Pattern scale (higher = smaller features)
+- `return`: How cellular noise returns values
+
+### Domain Warping
+
+Domain warping distorts the underlying noise for more organic patterns:
+
+```yaml
+sampler:
+  dimensions: 2
+  type: DOMAIN_WARP
+  amplitude: 4
+  warp:
+    type: OPEN_SIMPLEX_2
+    frequency: 0.01
+  sampler:
+    type: CELLULAR
+    return: CellValue
+    frequency: 0.08
+```
+
+**How It Works:**
+1. `warp` sampler generates distortion field (low frequency = large warps)
+2. Distortion is applied to base `sampler` coordinates
+3. `amplitude` controls strength of distortion (4 = up to 4 blocks)
+
+<Accordion title="Visualizing Domain Warp">
+Without domain warp:
+```
+■ ■ ■ ■ ■ ■ ■ ■
+■ ■ ■ ■ ■ ■ ■ ■
+□ □ □ □ □ □ □ □
+□ □ □ □ □ □ □ □
+```
+
+With domain warp:
+```
+■ ■ ■ ■ ■ □ ■ ■
+■ ■ ■ □ □ □ □ ■
+□ ■ □ □ □ ■ □ □
+□ □ □ □ ■ □ □ □
+```
+
+The straight boundary becomes organic and wavy.
+</Accordion>
+
+## Noise Types
+
+### Cellular Noise
+
+Creates Voronoi/cell patterns:
+
+```yaml
+type: CELLULAR
+return: CellValue
+frequency: 0.08
+```
+
+**Return Types:**
+- `CellValue`: Uses cell ID for materials (hard boundaries)
+- `Distance`: Uses distance to cell center (gradients)
+- `Distance2`: Uses distance to second-nearest cell
+
+**Frequency Guide:**
+- `0.01` - Very large cells (~100 blocks)
+- `0.08` - Medium cells (~12 blocks)
+- `0.8` - Small cells (~1.2 blocks)
+
+### Open Simplex 2
+
+Creates smooth, flowing patterns:
+
+```yaml
+type: OPEN_SIMPLEX_2
+frequency: 0.01
+```
+
+Used for warping and organic transitions.
+
+### FBM (Fractal Brownian Motion)
+
+Adds detail by layering multiple noise octaves:
+
+```yaml
+type: FBM
+octaves: 4
+sampler:
+  type: OPEN_SIMPLEX_2
+  frequency: 0.05
+```
+
+**Parameters:**
+- `octaves`: Number of detail layers (more = more detail, slower)
+- Each octave doubles frequency and halves amplitude
+
+## Example Palettes
+
+### Coral Coves
+
+Underwater cave with sandy walls:
+
+```yaml
+id: CORAL_COVES
+type: PALETTE
+
+layers:
+  - materials:
+      - minecraft:stone: 2
+      - minecraft:sand: 3
+      - minecraft:gravel: 1
+    layers: 2
+    sampler:
+      dimensions: 2
+      type: DOMAIN_WARP
+      amplitude: 4
+      warp:
+        type: OPEN_SIMPLEX_2
+        frequency: 0.01
+      sampler:
+        type: CELLULAR
+        return: CellValue
+        frequency: 0.08
+  - materials:
+      - minecraft:stone: 2
+      - minecraft:smooth_sandstone: 3
+      - minecraft:andesite: 1
+    layers: 1
+    sampler:
+      dimensions: 2
+      type: DOMAIN_WARP
+      amplitude: 4
+      warp:
+        type: OPEN_SIMPLEX_2
+        frequency: 0.1
+      sampler:
+        type: CELLULAR
+        return: CellValue
+        frequency: 0.8
+```
+
+**Analysis:**
+- **Surface layer**: Sandy beach-like texture (sand + gravel)
+- **Subsurface layer**: Compressed sandstone and stone
+- **Different samplers**: Each layer has unique patterning
+
+### Honey Grotto
+
+Golden honey-themed cave:
+
+```yaml
+id: HONEY_GROTTO
+type: PALETTE
+
+layers:
+  - materials:
+      - minecraft:stone: 1
+      - minecraft:yellow_terracotta: 2
+      - minecraft:moss_block: 2
+      - minecraft:yellow_concrete: 3
+    layers: 2
+    sampler:
+      dimensions: 2
+      type: DOMAIN_WARP
+      amplitude: 4
+      warp:
+        type: OPEN_SIMPLEX_2
+        frequency: 0.01
+      sampler:
+        type: CELLULAR
+        return: CellValue
+        frequency: 0.08
+  - materials:
+      - minecraft:stone: 4
+      - minecraft:yellow_terracotta: 2
+      - minecraft:honeycomb_block: 1
+      - minecraft:yellow_concrete: 3
+    layers: 1
+    sampler:
+      dimensions: 2
+      type: DOMAIN_WARP
+      amplitude: 4
+      warp:
+        type: OPEN_SIMPLEX_2
+        frequency: 0.1
+      sampler:
+        type: CELLULAR
+        return: CellValue
+        frequency: 0.8
+```
+
+**Analysis:**
+- **Golden theme**: Yellow terracotta + concrete dominate
+- **Organic touches**: Moss blocks and honeycomb add interest
+- **Subsurface honey**: Rare honeycomb blocks appear deeper in walls
+
+## 2D vs 3D Samplers
+
+### 2D Samplers (X/Z)
+
+```yaml
+sampler:
+  dimensions: 2
+  type: CELLULAR
+  frequency: 0.08
+```
+
+**Characteristics:**
+- Same pattern at all Y-levels
+- Creates vertical striping/banding
+- More performant
+- Best for: Walls, general terrain
+
+### 3D Samplers (X/Y/Z)
+
+```yaml
+sampler:
+  dimensions: 3
+  type: OPEN_SIMPLEX_2
+  frequency: 0.05
+```
+
+**Characteristics:**
+- Varies at different Y-levels
+- More volumetric, blob-like patterns
+- Slightly slower
+- Best for: Ore deposits, complex formations
+
+<Note>
+Most palettes use **2D samplers** because cave surfaces are already complex from carving. 3D samplers are better suited for features like ore veins.
+</Note>
+
+## Global Palette Configuration
+
+Substratum adds standard layers to all palettes via `substratum_meta.yml`:
+
+```yaml
+strata:
+  deepslate:
+    top: 7    # Y level where deepslate begins
+    bottom: -7  # Y level where all is deepslate
+  bedrock:
+    top: -60   # Y level where bedrock begins
+    bottom: -64  # Y level where all is bedrock
+  bedrock-top:
+    top: 319
+    bottom: 316
+
+palette-top:
+  - BLOCK:minecraft:bedrock: 319
+
+palette-bottom:
+  - DEEPSLATE: 7
+  - BEDROCK: -60
+  - BLOCK:minecraft:bedrock: -64
+```
+
+**Automatic Transitions:**
+- Stone → Deepslate at Y=7 to Y=-7
+- Deepslate → Bedrock at Y=-60 to Y=-64
+- Top bedrock at Y=316 to Y=319
+
+<Accordion title="Custom Deepslate Palettes">
+Some biomes define custom deepslate textures:
+
+```yaml
+# terracotta_caves_deepslate.yml
+id: TERRACOTTA_CAVES_DEEPSLATE
+type: PALETTE
+
+layers:
+  - materials:
+      - minecraft:deepslate: 1
+      - minecraft:brown_terracotta: 2
+      - minecraft:red_terracotta: 1
+    layers: 2
+    # ... sampler config
+```
+
+These replace the default deepslate layer for specific biomes.
+</Accordion>
+
+## Creating a Custom Palette
+
+Let's create a crystalline cave palette:
+
+```yaml
+id: CRYSTAL_CAVES
+type: PALETTE
+
+layers:
+  # Surface layer: Glittering crystal mix
+  - materials:
+      - minecraft:amethyst_block: 2
+      - minecraft:calcite: 3
+      - minecraft:dripstone_block: 2
+      - minecraft:smooth_quartz: 1
+    layers: 2
+    sampler:
+      dimensions: 2
+      type: DOMAIN_WARP
+      amplitude: 3
+      warp:
+        type: OPEN_SIMPLEX_2
+        frequency: 0.02
+      sampler:
+        type: CELLULAR
+        return: CellValue
+        frequency: 0.1
+  
+  # Subsurface layer: Stone base with crystal veins
+  - materials:
+      - minecraft:stone: 5
+      - minecraft:calcite: 2
+      - minecraft:amethyst_block: 1
+    layers: 1
+    sampler:
+      dimensions: 2
+      type: DOMAIN_WARP
+      amplitude: 2
+      warp:
+        type: OPEN_SIMPLEX_2
+        frequency: 0.05
+      sampler:
+        type: CELLULAR
+        return: CellValue
+        frequency: 0.5
+```
+
+<Accordion title="Design Decisions">
+- **Surface layer**:
+  - More crystal blocks (amethyst + quartz)
+  - Lower frequency (0.1) = larger crystal patches
+  - Moderate warp frequency (0.02) = gentle curves
+  - 2 blocks deep for substantial surface texture
+
+- **Subsurface layer**:
+  - Mostly stone (5/8 weight)
+  - Rare crystals (1/8 amethyst)
+  - Higher frequency (0.5) = smaller veins
+  - 1 block deep (just under surface)
+
+- **Domain warping**:
+  - Creates organic crystal formations
+  - Different frequencies prevent repetition
+</Accordion>
+
+## Palette Assignment
+
+Palettes are assigned to biomes in the biome configuration:
+
+```yaml
+# In biome YAML
+palette:
+  type: PALETTE
+  palette: CRYSTAL_CAVES
+```
+
+Some biomes use multiple palettes based on conditions:
+
+```yaml
+palette:
+  type: SAMPLER
+  sampler:
+    # Noise-based palette selection
+  palettes:
+    FROZEN_CAVERNS: 1
+    FROZEN_CAVERNS_DEEPSLATE: 1
+```
+
+## Tuning Palettes
+
+### More Variation
+
+```yaml
+materials:
+  - minecraft:stone: 1
+  - minecraft:andesite: 1
+  - minecraft:diorite: 1
+  - minecraft:granite: 1
+  - minecraft:calcite: 1
+```
+
+More materials = more variety, but can look chaotic.
+
+### Bolder Patterns
+
+```yaml
+sampler:
+  type: CELLULAR
+  frequency: 0.05  # Lower = larger patches
+```
+
+### Subtler Patterns
+
+```yaml
+sampler:
+  type: CELLULAR
+  frequency: 0.3   # Higher = smaller patches
+```
+
+### More Organic Shapes
+
+```yaml
+sampler:
+  type: DOMAIN_WARP
+  amplitude: 8     # Higher = more distortion
+  warp:
+    frequency: 0.005  # Lower = larger warps
+```
+
+## Performance Considerations
+
+### Optimized Palette
+
+```yaml
+sampler:
+  dimensions: 2       # Faster than 3D
+  type: CELLULAR      # Fast noise type
+  frequency: 0.08     # Moderate complexity
+```
+
+### Heavy Palette
+
+```yaml
+sampler:
+  dimensions: 3       # Slower than 2D
+  type: FBM           # More computation
+  octaves: 6          # Multiple passes
+  sampler:
+    type: DOMAIN_WARP  # Nested complexity
+```
+
+<Note>
+For most use cases, stick with **2D cellular noise with domain warping**. This provides good visual results with reasonable performance.
+</Note>
+
+## Common Patterns
+
+### Banded/Layered Look
+
+```yaml
+sampler:
+  dimensions: 2
+  type: CELLULAR
+  return: Distance
+  frequency: 0.1
+```
+
+Use `Distance` return for gradient-based banding.
+
+### Patchy/Spotty Look
+
+```yaml
+sampler:
+  dimensions: 2
+  type: CELLULAR
+  return: CellValue
+  frequency: 0.2
+```
+
+Higher frequency with `CellValue` creates many small patches.
+
+### Flowing/Organic Look
+
+```yaml
+sampler:
+  dimensions: 2
+  type: DOMAIN_WARP
+  amplitude: 6
+  warp:
+    type: OPEN_SIMPLEX_2
+    frequency: 0.01
+  sampler:
+    type: OPEN_SIMPLEX_2
+    frequency: 0.05
+```
+
+Double simplex (warp + base) creates flowing patterns.
+
+## See Also
+
+- [Cave Carving System](/advanced/cave-carving-system) - Understand cave generation
+- [Custom Features](/advanced/custom-features) - Add decorations to cave surfaces
+- [Cave Biomes](/biomes/cave-biomes) - Explore different cave types

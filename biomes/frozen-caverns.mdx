@@ -1,0 +1,61 @@
+---
+title: Frozen Caverns
+description: Icy underground chambers with massive icicle formations
+---
+
+The Frozen Caverns are frigid underground areas featuring ice, snow, and spectacular icicle formations hanging from ceilings and rising from floors.
+
+## Overview
+
+**Biome ID:** `FROZEN_CAVERNS`  
+**Vanilla Replacement:** `minecraft:dripstone_caves`  
+**Color Code:** `#91C9C4`
+
+## Terrain Palette
+
+The Frozen Caverns feature an icy, crystalline palette:
+
+### Surface Layers (2 blocks deep)
+- Stone
+- Snow Block (dominant)
+- Packed Ice
+- Blue Ice
+
+### Subsurface Layer (1 block deep)
+- Stone
+- Packed Ice
+- Blue Ice
+- Snow Block
+
+### Deepslate Transition
+Below Y-level 7, terrain transitions to the `FROZEN_CAVERNS_DEEPSLATE` palette.
+
+## Features
+
+### Preprocessors
+- **Ceiling Icicles** (Substratum variant) - Large icicles hanging from cave ceilings
+- **Ground Icicles** (Substratum variant) - Icicles rising from cave floors
+
+### Slabs
+- **Snow** - Snow layers cover floors where possible
+
+### Landforms
+- **Giant Ceiling Icicles** (Substratum variant) - Massive ice formations hanging from above
+
+## Environment
+
+Frozen Caverns create a cold, pristine underground environment. The combination of snow coverage, ice blocks, and dramatic icicle formations makes these caves feel like natural ice caverns. The blue ice adds a striking cyan glow in places.
+
+<Note>
+The giant icicle formations can create natural columns connecting floor to ceiling, similar to dripstone caves but with an icy aesthetic.
+</Note>
+
+## Palette Configuration
+
+The terrain generation uses:
+- **Sampler Type:** Cellular with domain warp
+- **Frequency:** 0.08 (surface), 0.8 (subsurface)
+- **Warp Frequency:** 0.01 (surface), 0.1 (subsurface)
+- **Dimensions:** 2D sampling
+
+Source: `/biomes/cave/substratum/frozen_caverns.yml:1`

@@ -1,0 +1,292 @@
+---
+title: "Biome Distribution"
+description: "Configure biome scales, Y-level ranges, and distribution parameters"
+---
+
+## Overview
+
+Biome distribution parameters control how cave biomes are placed and scaled throughout your underground world. These settings are found in `substratum_meta.yml` under the `biome-distribution` section.
+
+<Note>
+  All biome distribution parameters are injected into various biome provider configs via Terra's meta-configuration system. Changes to these values affect newly generated chunks only.
+</Note>
+
+## Scale Parameters
+
+Scale parameters control the size and distribution of biomes across your world.
+
+### Global Scale
+
+<ParamField path="global-scale" type="number" default="1">
+  Modifies the scale of everything in the world. Doubling this value doubles the length and width of all biomes.
+  
+  **Effect**: A biome that is 300 blocks wide with `global-scale: 1` will be 600 blocks wide with `global-scale: 2`.
+  
+  **Recommended Range**: 0.5 - 3.0
+  
+  **Use Cases**:
+  - Set to `0.5` for more frequent biome changes and variety
+  - Set to `2.0` or higher for massive, expansive biome regions
+  - Keep at `1.0` for default Substratum experience
+</ParamField>
+
+**Example Configuration:**
+
+```yaml
+biome-distribution:
+  global-scale: 1.5 # Biomes 50% larger than default
+```
+
+### Cave Scale
+
+<ParamField path="cave-scale" type="number" default="100">
+  Controls the scale of all cave foundations. This affects the overall cave structure generation before biomes are applied.
+  
+  **Effect**: Higher values create more gradual, large-scale cave systems. Lower values create more chaotic, varied cave structures.
+  
+  **Recommended Range**: 50 - 200
+</ParamField>
+
+**Example Configuration:**
+
+```yaml
+biome-distribution:
+  cave-scale: 150 # Larger, more gradual cave foundations
+```
+
+### Cave Biome Scale
+
+<ParamField path="cave-biome-scale" type="number" default="200">
+  Controls the scale of cave biome placement. Larger values mean bigger areas of any given cave biome, smaller values mean more frequent biome transitions.
+  
+  **Effect**: This is the most direct control over individual cave biome size.
+  
+  **Recommended Range**: 100 - 400
+  
+  **Use Cases**:
+  - Set to `100` for frequent biome variety during exploration
+  - Set to `300+` for expansive single-biome cave systems
+  - Default `200` provides balanced exploration experience
+</ParamField>
+
+**Example Configuration:**
+
+```yaml
+biome-distribution:
+  cave-biome-scale: 250 # Slightly larger biome regions
+```
+
+## Y-Level Range Parameters
+
+These parameters define the vertical boundaries where cave biomes can generate.
+
+### Cave Biome Min/Max
+
+<ParamField path="cave-biome-min" type="integer" default="-63">
+  Minimum Y-level where Substratum cave biomes can generate.
+  
+  **Minecraft Range**: -64 to 320
+  
+  **Default**: -63 (just above bedrock)
+</ParamField>
+
+<ParamField path="cave-biome-max" type="integer" default="300">
+  Maximum Y-level where Substratum cave biomes can generate.
+  
+  **Minecraft Range**: -64 to 320
+  
+  **Default**: 300 (near world height limit)
+  
+  <Note>
+    In a pure Substratum world, this typically doesn't matter since the world is fully underground. However, when using drop-in merge with other packs, this determines where Substratum biomes can appear.
+  </Note>
+</ParamField>
+
+**Example Configuration:**
+
+```yaml
+biome-distribution:
+  cave-biome-min: -63 # Caves from bedrock
+  cave-biome-max: 300  # To near world height
+```
+
+### Substratum Carving Min/Max
+
+<ParamField path="substratum-carving-min" type="integer" default="-63">
+  Minimum Y-level where Substratum's cave carving system operates.
+</ParamField>
+
+<ParamField path="substratum-carving-max" type="integer" default="300">
+  Maximum Y-level where Substratum's cave carving system operates.
+  
+  <Info>
+    These parameters control the cave carving system that creates the actual cave voids. They typically match `cave-biome-min` and `cave-biome-max` for consistent generation.
+  </Info>
+</ParamField>
+
+**Example Configuration:**
+
+```yaml
+biome-distribution:
+  substratum-carving-min: -63
+  substratum-carving-max: 300
+```
+
+## Complete Configuration Example
+
+Here's a complete `substratum_meta.yml` biome-distribution section with explanatory comments:
+
+```yaml substratum_meta.yml
+biome-distribution:
+  # Scale Parameters
+  global-scale: 1
+  # Default scale - modify to make all biomes larger (>1) or smaller (<1)
+  
+  cave-scale: 100
+  # Cave foundation structure scale
+  
+  cave-biome-scale: 200
+  # Individual cave biome region size
+  
+  # Y-Level Ranges for Cave Carving
+  substratum-carving-max: 300
+  # Highest Y-level for cave generation
+  
+  substratum-carving-min: -63
+  # Lowest Y-level for cave generation
+  
+  # Y-Level Ranges for Cave Biomes
+  cave-biome-max: 300
+  # Highest Y-level where cave biomes spawn
+  
+  cave-biome-min: -63
+  # Lowest Y-level where cave biomes spawn
+```
+
+## Common Configuration Scenarios
+
+<AccordionGroup>
+  <Accordion title="Massive Expansive Biomes" icon="expand">
+    For players who want to explore huge single-biome cave systems:
+    
+    ```yaml
+    biome-distribution:
+      global-scale: 2.5
+      cave-biome-scale: 400
+      cave-scale: 150
+    ```
+    
+    This creates biome regions that can span thousands of blocks.
+  </Accordion>
+  
+  <Accordion title="Frequent Biome Variety" icon="shuffle">
+    For players who want constant biome changes during exploration:
+    
+    ```yaml
+    biome-distribution:
+      global-scale: 0.6
+      cave-biome-scale: 120
+      cave-scale: 80
+    ```
+    
+    This creates smaller, more frequent biome transitions.
+  </Accordion>
+  
+  <Accordion title="Deep Caves Only" icon="arrow-down">
+    To restrict Substratum caves to deep underground (below Y=0):
+    
+    ```yaml
+    biome-distribution:
+      cave-biome-max: 0
+      cave-biome-min: -63
+      substratum-carving-max: 0
+      substratum-carving-min: -63
+    ```
+    
+    Useful when merging with other packs that handle surface caves.
+  </Accordion>
+  
+  <Accordion title="High-Altitude Caves" icon="arrow-up">
+    To generate Substratum caves primarily at higher elevations:
+    
+    ```yaml
+    biome-distribution:
+      cave-biome-max: 300
+      cave-biome-min: 50
+      substratum-carving-max: 300
+      substratum-carving-min: 50
+    ```
+    
+    Creates floating mountain cave systems.
+  </Accordion>
+</AccordionGroup>
+
+## How Scale Parameters Interact
+
+The three scale parameters work together to create the final biome distribution:
+
+<Steps>
+  <Step title="Cave Foundation">
+    `cave-scale` determines the overall cave structure and foundation layout.
+  </Step>
+  
+  <Step title="Global Scaling">
+    `global-scale` multiplies all dimensions, affecting both cave foundations and biome regions.
+  </Step>
+  
+  <Step title="Biome Placement">
+    `cave-biome-scale` controls how biomes are distributed within the cave foundations, modified by the global scale.
+  </Step>
+</Steps>
+
+**Effective Cave Biome Size Formula:**
+```
+Effective Biome Size = cave-biome-scale × global-scale
+```
+
+For example:
+- `cave-biome-scale: 200` and `global-scale: 2` = biomes with effective scale of 400
+- `cave-biome-scale: 200` and `global-scale: 0.5` = biomes with effective scale of 100
+
+## Testing Your Configuration
+
+<Steps>
+  <Step title="Make Changes">
+    Edit `substratum_meta.yml` with your desired parameters.
+  </Step>
+  
+  <Step title="Reload Terra">
+    Run `/terra reload` in-game or restart your server.
+  </Step>
+  
+  <Step title="Generate New Chunks">
+    Travel to unexplored areas or create a new test world. Configuration only affects new chunk generation.
+  </Step>
+  
+  <Step title="Evaluate Results">
+    Explore the caves and note the biome sizes and distribution. Adjust parameters as needed.
+  </Step>
+</Steps>
+
+<Warning>
+  Changes to biome distribution parameters do not affect already generated chunks. You must explore new areas or regenerate your world to see changes.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Strata Layers"
+    icon="layer-group"
+    href="/configuration/strata-layers"
+  >
+    Configure deepslate and bedrock generation
+  </Card>
+  <Card
+    title="Disabling Biomes"
+    icon="ban"
+    href="/configuration/disabling-biomes"
+  >
+    Control which biomes appear in your world
+  </Card>
+</CardGroup>

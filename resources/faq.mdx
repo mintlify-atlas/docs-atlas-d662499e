@@ -1,0 +1,398 @@
+---
+title: "FAQ"
+description: "Frequently asked questions about Substratum"
+---
+
+Find answers to the most common questions about Substratum installation, compatibility, performance, and customization.
+
+## General Questions
+
+<AccordionGroup>
+  <Accordion title="What is Substratum?" icon="circle-question">
+    Substratum is a Terra config pack that transforms Minecraft's world generation into a completely underground experience. It features 14 unique cave biomes with custom terrain, decorations, and specialized features, creating a fully explorable subterranean world from bedrock to bedrock.
+  </Accordion>
+
+  <Accordion title="What is Terra?" icon="earth">
+    Terra is a powerful world generation platform for Minecraft that allows for completely custom terrain generation through configuration packs. Substratum is built on Terra and requires it to function. Learn more at [terra.polydev.org](https://terra.polydev.org).
+  </Accordion>
+
+  <Accordion title="Can I use Substratum on existing worlds?" icon="triangle-exclamation">
+    **No.** Terra generators (including Substratum) can only be applied to newly generated worlds. You cannot convert an existing vanilla or modded world to use Substratum. You must create a new world with Substratum configured before generation begins.
+  </Accordion>
+
+  <Accordion title="Is Substratum free and open source?" icon="code">
+    Yes! Substratum is completely free and open source under the MIT license. You can view, modify, and distribute the source code. The project is available on [GitHub](https://github.com/DeathShadez/Substratum).
+  </Accordion>
+</AccordionGroup>
+
+## Compatibility
+
+<AccordionGroup>
+  <Accordion title="What Minecraft versions does Substratum support?" icon="cube">
+    Substratum is designed for Minecraft 1.18+ due to its use of the extended world height and cave generation systems. It works best with Minecraft 1.18, 1.19, and 1.20.x versions. Check the [releases page](https://github.com/DeathShadez/Substratum/releases) for version-specific builds.
+  </Accordion>
+
+  <Accordion title="What server platforms are compatible?" icon="server">
+    Substratum works on any platform that supports Terra:
+    
+    - **Bukkit/Spigot/Paper** (recommended) - Full support with easy configuration via `bukkit.yml`
+    - **Fabric** - Supported, but requires manual `level.dat` editing for custom dimensions
+    - **Forge** - Supported through Terra's Forge implementation
+    
+    Paper is recommended for the best performance and compatibility.
+  </Accordion>
+
+  <Accordion title="Can I use Substratum in singleplayer?" icon="user">
+    Yes! Substratum works in both multiplayer servers and singleplayer worlds. For singleplayer:
+    
+    - **Fabric**: Install Terra as a mod and place Substratum in `config/Terra/packs/`
+    - **Forge**: Install Terra and configure similarly
+    
+    Note that you'll need to create a new world to apply Substratum's generation.
+  </Accordion>
+
+  <Accordion title="Does Substratum work with other mods/plugins?" icon="puzzle-piece">
+    Yes, Substratum is generally compatible with other mods and plugins:
+    
+    **Compatible:**
+    - Performance mods (Sodium, Lithium, Starlight)
+    - Visual mods (Optifine, Iris Shaders)
+    - Gameplay plugins (economy, permissions, protection)
+    - Mob/item mods that don't alter world generation
+    
+    **May conflict:**
+    - Other world generation mods/plugins
+    - Biome modification mods
+    - Ore distribution overhaul mods
+    
+    Always test mod combinations in a test world first.
+  </Accordion>
+
+  <Accordion title="Can I merge Substratum with other Terra packs?" icon="layer-group">
+    **Yes!** This is one of Substratum's key features. You can add Substratum's cave biomes to other Terra packs using the Drop-In Merge installation method:
+    
+    1. Copy all Substratum files to your target pack
+    2. Skip duplicate files
+    3. Edit `substratum_meta.yml` to adjust Y-level ranges
+    4. Add the extrusion to your pack's preset
+    
+    See the [Drop-In Merge guide](/installation/drop-in-merge) for detailed instructions. Substratum works particularly well with OverworldConfig.
+  </Accordion>
+</AccordionGroup>
+
+## Performance
+
+<AccordionGroup>
+  <Accordion title="Will Substratum cause lag on my server?" icon="gauge-high">
+    Substratum's performance impact depends on your server hardware and configuration:
+    
+    **During generation:**
+    - New chunk generation is more intensive than vanilla
+    - Pre-generating terrain is **highly recommended**
+    - Use plugins like Chunky to pre-generate before opening to players
+    
+    **During gameplay:**
+    - Performance is comparable to vanilla once chunks are generated
+    - Complex biomes (Honey Grotto, Amethyst Hollow) may be slightly more demanding
+    - Use optimization mods/plugins for best results
+    
+    **Minimum recommendations:**
+    - 4GB RAM for small servers (1-10 players)
+    - 8GB+ RAM for larger servers
+    - Modern CPU with good single-thread performance
+  </Accordion>
+
+  <Accordion title="How do I improve world generation performance?" icon="rocket">
+    Follow these best practices for optimal performance:
+    
+    1. **Pre-generate terrain** using Chunky or similar plugins before players join
+    2. **Allocate sufficient RAM** to your server (8GB+ recommended)
+    3. **Use Paper** instead of Spigot or vanilla for better generation performance
+    4. **Install optimization plugins** like Lithium (Fabric) or optimization plugins (Paper)
+    5. **Disable complex biomes** if needed by commenting them out in `add_substratum_cave_biomes.yml`
+    6. **Reduce cave scale** in `substratum_meta.yml` to generate simpler terrain
+  </Accordion>
+
+  <Accordion title="Why is lighting slow in caves?" icon="lightbulb">
+    Underground worlds require extensive lighting calculations. Solutions:
+    
+    - **Starlight** (Fabric/Forge mod) - Rewrites lighting engine for huge performance gains
+    - **Phosphor** (Fabric mod) - Optimizes vanilla lighting
+    - **Paper** includes built-in lighting optimizations
+    - **Pre-generate chunks** to handle lighting during pre-generation instead of during gameplay
+  </Accordion>
+
+  <Accordion title="Can I reduce the complexity of biomes?" icon="sliders">
+    Yes! You can customize Substratum's complexity:
+    
+    **Disable entire biomes:**
+    Edit `biome-providers/extrusions/add_substratum_cave_biomes.yml` and comment out biomes with `#`
+    
+    **Adjust feature density:**
+    Edit individual biome configuration files to reduce decoration frequency
+    
+    **Simplify cave systems:**
+    Adjust noise parameters in carver configurations (advanced users only)
+    
+    See the [Configuration guide](/configuration/overview) for more details.
+  </Accordion>
+</AccordionGroup>
+
+## Customization
+
+<AccordionGroup>
+  <Accordion title="How do I disable specific biomes?" icon="eye-slash">
+    To disable a cave biome:
+    
+    1. Open `biome-providers/extrusions/add_substratum_cave_biomes.yml`
+    2. Find the biome in the weighted list
+    3. Add `#` at the start of the line to comment it out
+    
+    Example:
+    ```yaml
+    biomes:
+      - HONEY_GROTTO: 1
+      # - CORAL_COVES: 1  # This biome is disabled
+      - FROZEN_CAVERNS: 1
+    ```
+    
+    See the [Disabling Biomes guide](/configuration/disabling-biomes) for more information.
+  </Accordion>
+
+  <Accordion title="How do I make biomes larger or smaller?" icon="maximize">
+    Adjust biome size in `substratum_meta.yml`:
+    
+    ```yaml
+    biome-distribution:
+      global-scale: 1        # Multiplier for everything
+      cave-biome-scale: 200  # Specific to cave biomes
+    ```
+    
+    - **Double the scale** = biomes 2x larger (e.g., 200 → 400)
+    - **Halve the scale** = biomes 2x smaller (e.g., 200 → 100)
+    
+    Changes take effect in newly generated chunks only.
+  </Accordion>
+
+  <Accordion title="Can I change the Y-level range of caves?" icon="arrow-down-up-across-line">
+    Yes! Edit the Y-level parameters in `substratum_meta.yml`:
+    
+    ```yaml
+    biome-distribution:
+      cave-biome-max: 300   # Top of cave generation
+      cave-biome-min: -63   # Bottom of cave generation
+    ```
+    
+    This is especially useful when merging with other packs. For example, OverworldConfig typically uses:
+    ```yaml
+    cave-biome-max: 48
+    cave-biome-min: -16
+    ```
+  </Accordion>
+
+  <Accordion title="Can I change where deepslate and bedrock generate?" icon="layer-group">
+    Yes! Configure strata layers in `substratum_meta.yml`:
+    
+    ```yaml
+    strata:
+      deepslate:
+        top: 7      # Y level where deepslate begins
+        bottom: -7  # Y level where stone becomes 100% deepslate
+      bedrock:
+        top: -60    # Y level where bedrock begins
+        bottom: -64 # Y level where 100% bedrock
+    ```
+    
+    You can also configure the top bedrock layer (Y: 316-319) which prevents players from escaping the underground world.
+  </Accordion>
+
+  <Accordion title="Can I add custom structures to Substratum biomes?" icon="building">
+    Yes! Substratum uses Terra's structure system, so you can add your own structures:
+    
+    1. Create your structure file in the `structures/` directory
+    2. Configure structure placement in the relevant biome file
+    3. Reference Terra's [structure documentation](https://terra.polydev.org/config/documentation/objects/Structure.html) for syntax
+    
+    Advanced users can create custom decorations, trees, and terrain features using Terra's configuration system.
+  </Accordion>
+
+  <Accordion title="How do I adjust ore generation?" icon="gem">
+    Ore distribution is controlled by files in `structures/deposits/ores/`. Each ore has its own configuration file where you can adjust:
+    
+    - Vein size
+    - Frequency (spawn rate)
+    - Y-level range
+    - Biome placement
+    
+    For example, to make diamonds more common, edit `structures/deposits/ores/diamond_ore.yml` and increase the spawn probability.
+  </Accordion>
+</AccordionGroup>
+
+## Merging & Integration
+
+<AccordionGroup>
+  <Accordion title="What's the difference between World Installation and Drop-In Merge?" icon="circle-question">
+    **World Installation:**
+    - Creates a complete underground-only world
+    - Uses Substratum as the primary generator
+    - No surface terrain, caves from bedrock to bedrock
+    - Best for dedicated underground survival servers
+    
+    **Drop-In Merge:**
+    - Adds Substratum caves to an existing Terra pack
+    - Keeps the host pack's surface/terrain
+    - Substratum biomes appear underground only
+    - Best for adding variety to existing packs
+    
+    Choose World Installation for a pure underground experience, or Drop-In Merge to enhance another pack.
+  </Accordion>
+
+  <Accordion title="Which packs work well with Substratum?" icon="handshake">
+    Substratum is designed to merge cleanly with:
+    
+    - **OverworldConfig** - Official compatibility, shares some resources
+    - **Custom Terra packs** - Most Terra packs are compatible
+    - **ReimagEND** - Substratum includes ReimagEND resources for End dimension
+    
+    Packs with custom cave systems may have conflicts. Always test in a new world before deploying to production.
+  </Accordion>
+
+  <Accordion title="Do I need to download both Substratum and OverworldConfig?" icon="download">
+    **No.** It depends on your installation method:
+    
+    - **World Installation**: Only download Substratum
+    - **Drop-In Merge with OverworldConfig**: Download both packs
+    
+    Substratum includes necessary shared resources from OverworldConfig, so it can function independently for full-world generation.
+  </Accordion>
+
+  <Accordion title="Why should I skip duplicate files during merge?" icon="files">
+    When merging Substratum into another pack, you should skip duplicate files because:
+    
+    1. **Shared dependencies**: Files like Terra core utilities are identical
+    2. **Pack integrity**: Overwriting the host pack's `pack.yml` would break its configuration
+    3. **Designed behavior**: Substratum is designed to coexist with these shared files
+    
+    The only files you need to manually edit are those explicitly mentioned in the Drop-In Merge guide.
+  </Accordion>
+
+  <Accordion title="Can I merge multiple cave packs together?" icon="layer-plus">
+    Technically yes, but it's **not recommended** without advanced Terra knowledge:
+    
+    - Biome distribution must be carefully balanced
+    - Noise configurations may conflict
+    - Y-level ranges must be coordinated
+    - Feature overlap can cause generation issues
+    
+    If you want to attempt this, thoroughly test in creative worlds and be prepared to debug configuration conflicts.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Players spawn at the top bedrock layer - how do I fix this?" icon="triangle-exclamation">
+    This is a known issue. Solutions:
+    
+    1. **Manually teleport players**: `/tp @p ~ 100 ~`
+    2. **Use a spawn control plugin** to override spawn Y-level
+    3. **Pre-configure spawn point** before players join
+    
+    See the [Troubleshooting guide](/resources/troubleshooting) for detailed solutions.
+  </Accordion>
+
+  <Accordion title="Why are my players suffocating on spawn?" icon="skull">
+    This occurs when spawn is calculated before underground caves generate. Solutions:
+    
+    1. **Pre-generate spawn chunks** with Chunky or WorldBorder
+    2. **Install a safe spawn plugin** that ensures air blocks at spawn
+    3. **Temporarily give resistance effects** during first spawn
+    
+    Pre-generation is the most reliable solution. See [Troubleshooting](/resources/troubleshooting) for more details.
+  </Accordion>
+
+  <Accordion title="Substratum biomes aren't appearing in my merged pack" icon="magnifying-glass">
+    Check these common issues:
+    
+    1. **Extrusion not added**: Verify you added the extrusion line to your pack's preset
+    2. **Y-level mismatch**: Check that `cave-biome-max` and `cave-biome-min` in `substratum_meta.yml` match your pack's cave range
+    3. **Scale too large**: Try reducing `cave-biome-scale` for more frequent biomes
+    4. **Wrong world**: Ensure you created a new world after configuration
+    
+    See [Troubleshooting](/resources/troubleshooting#drop-in-merge-issues) for detailed diagnostics.
+  </Accordion>
+
+  <Accordion title="Should I enable Coral Coves?" icon="water">
+    **Not recommended.** Coral Coves is disabled by default because:
+    
+    - Messy biome borders and transitions
+    - Poor integration with other biomes
+    - Amplified issues when merged with other packs
+    
+    It remains in the pack for experimentation but is not considered production-ready. See [Troubleshooting](/resources/troubleshooting#coral-coves-border-issues) for more information.
+  </Accordion>
+</AccordionGroup>
+
+## Getting Support
+
+<AccordionGroup>
+  <Accordion title="Where can I get help with Substratum?" icon="circle-question">
+    If you need assistance:
+    
+    1. **Check this FAQ** - Many common questions are answered here
+    2. **Read the Troubleshooting guide** - Covers common issues and solutions
+    3. **Consult Terra docs** - Platform-specific issues may be Terra-related: [terra.polydev.org](https://terra.polydev.org)
+    4. **GitHub Issues** - Report bugs or request features: [github.com/DeathShadez/Substratum/issues](https://github.com/DeathShadez/Substratum/issues)
+  </Accordion>
+
+  <Accordion title="How do I report a bug?" icon="bug">
+    To report a bug effectively:
+    
+    1. **Check existing issues** first on GitHub
+    2. **Include the following information:**
+       - Server platform and version (e.g., Paper 1.20.1)
+       - Terra version
+       - Substratum version/commit
+       - Installation method (World vs Drop-In Merge)
+       - Steps to reproduce the issue
+       - Relevant logs or error messages
+       - Screenshots if applicable
+    
+    Submit your report at [github.com/DeathShadez/Substratum/issues](https://github.com/DeathShadez/Substratum/issues)
+  </Accordion>
+
+  <Accordion title="Can I request new features or biomes?" icon="lightbulb">
+    Yes! Feature requests are welcome on the GitHub repository. When requesting features:
+    
+    - Describe the feature in detail
+    - Explain the use case or benefit
+    - Include reference images if applicable
+    - Consider whether it fits Substratum's underground theme
+    
+    Submit feature requests at [github.com/DeathShadez/Substratum/issues](https://github.com/DeathShadez/Substratum/issues) with the "enhancement" label.
+  </Accordion>
+
+  <Accordion title="Can I contribute to Substratum?" icon="code-branch">
+    Absolutely! Substratum is open source and welcomes contributions:
+    
+    - **Code contributions**: Submit pull requests on GitHub
+    - **Biome designs**: Create and share custom biome configurations
+    - **Documentation**: Help improve guides and explanations
+    - **Bug reports**: Report and help diagnose issues
+    - **Testing**: Test new releases and provide feedback
+    
+    See the repository's CONTRIBUTING.md for guidelines.
+  </Accordion>
+</AccordionGroup>
+
+## Still have questions?
+
+<CardGroup cols={2}>
+  <Card title="GitHub Issues" icon="github" href="https://github.com/DeathShadez/Substratum/issues">
+    Ask questions or report issues on the official repository
+  </Card>
+  
+  <Card title="Terra Documentation" icon="book" href="https://terra.polydev.org">
+    Learn more about Terra's world generation system
+  </Card>
+</CardGroup>

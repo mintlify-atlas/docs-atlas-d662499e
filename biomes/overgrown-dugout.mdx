@@ -1,0 +1,55 @@
+---
+title: Overgrown Dugout
+description: Ancient caves overtaken by vines and cobwebs
+---
+
+Overgrown Dugout biomes are ancient, abandoned-feeling caves where nature has reclaimed the stone, with vines and cobwebs covering surfaces.
+
+## Overview
+
+**Biome ID:** `OVERGROWN_DUGOUT`  
+**Vanilla Replacement:** `minecraft:dripstone_caves`  
+**Color Code:** `#222B23`
+
+## Terrain Palette
+
+Overgrown Dugout uses weathered stone materials:
+
+### Single Layer (1 block deep)
+- Stone
+- Cobblestone
+- Mossy Cobblestone
+- Moss Block
+
+### Deepslate Transition
+Below Y-level 7, terrain uses the `OVERGROWN_DUGOUT_DEEPSLATE` palette.
+
+<Note>
+The palette uses white noise sampling instead of the typical cellular noise, creating more random, chaotic patterns that enhance the abandoned aesthetic.
+</Note>
+
+## Features
+
+### Flora
+- **Hanging Vines** - Vines dangling from cave ceilings
+- **Wall Vines** - Vines growing on cave walls
+
+### Postprocessors
+- **Hanging Cobwebs** - Cobwebs suspended from ceilings, adding to the abandoned atmosphere
+
+## Environment
+
+Overgrown Dugout biomes feel ancient and abandoned. The combination of mossy cobblestone, hanging vines, and cobwebs creates an atmosphere of decay and neglect, as if these caves were once inhabited but have been reclaimed by nature. The dark color code reinforces the shadowy, forgotten feel.
+
+<Note>
+The cobwebs aren't just decorative - they can actually slow player movement and add a sense of exploration challenge.
+</Note>
+
+## Palette Configuration
+
+The terrain generation uses:
+- **Sampler Type:** White Noise
+- **Salt:** 5678 (for randomization)
+- **Dimensions:** Random sampling
+
+Source: `/biomes/cave/substratum/overgrown_dugout.yml:1`

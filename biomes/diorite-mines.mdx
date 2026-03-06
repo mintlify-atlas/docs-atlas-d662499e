@@ -1,0 +1,53 @@
+---
+title: Diorite Mines
+description: Light-colored caves dominated by diorite
+---
+
+Diorite Mines are bright, light-colored caves where diorite stone is naturally concentrated, creating speckled white-and-gray patterns.
+
+## Overview
+
+**Biome ID:** `DIORITE_MINES`  
+**Vanilla Replacement:** `minecraft:dripstone_caves`  
+**Color Code:** `#E6E6E6`
+
+## Terrain Palette
+
+Diorite Mines feature a simple two-material palette:
+
+### Surface Layers (2 blocks deep)
+- Stone (dominant - 3 parts)
+- Diorite (1 part)
+
+### Subsurface Layer (1 block deep)
+- Stone (dominant - 3 parts)
+- Diorite (1 part)
+
+### Deepslate Transition
+Below Y-level 7, terrain uses the `DIORITE_MINES_DEEPSLATE` palette.
+
+<Note>
+Diorite appears at a 1:3 ratio with stone, creating veins and pockets throughout the cave system.
+</Note>
+
+## Features
+
+Diorite Mines are primarily defined by their terrain palette and do not include additional feature decorations.
+
+## Environment
+
+Diorite Mines are the brightest of the three vanilla stone variant mine biomes. The speckled white appearance of diorite mixed with regular stone creates naturally bright caves. These caves feel clean and open compared to darker cave biomes.
+
+<Note>
+This biome is perfect for gathering diorite for building projects, particularly for players who prefer bright stone materials.
+</Note>
+
+## Palette Configuration
+
+The terrain generation uses:
+- **Sampler Type:** Cellular with domain warp
+- **Frequency:** 0.08 (surface), 0.8 (subsurface)
+- **Warp Frequency:** 0.01 (surface), 0.1 (subsurface)
+- **Dimensions:** 2D sampling
+
+Source: `/biomes/cave/substratum/diorite_mines.yml:1`

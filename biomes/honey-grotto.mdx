@@ -1,0 +1,75 @@
+---
+title: Honey Grotto
+description: Sweet underground caves filled with giant bee nests and honey
+---
+
+The Honey Grotto is a vibrant, life-filled cave biome featuring golden honeycomb blocks, flowering plants, and massive bee nest structures.
+
+## Overview
+
+**Biome ID:** `HONEY_GROTTO`  
+**Vanilla Replacement:** `minecraft:dripstone_caves`  
+**Color Code:** `#EBCC31`
+
+## Terrain Palette
+
+The Honey Grotto uses a warm, golden color palette:
+
+### Surface Layers (2 blocks deep)
+- Stone
+- Yellow Terracotta
+- Moss Block
+- Yellow Concrete
+
+### Subsurface Layer (1 block deep)
+- Stone (primary)
+- Yellow Terracotta
+- Honeycomb Block
+- Yellow Concrete
+
+### Deepslate Transition
+Below Y-level 7, the terrain transitions to a deepslate variant using the `HONEY_GROTTO_DEEPSLATE` palette.
+
+<Note>
+The palette uses cellular noise with domain warping to create organic, varied terrain patterns.
+</Note>
+
+## Features
+
+### Landforms
+- **Giant Bee Nests** - Massive honeycomb structures that dominate the landscape
+
+### Preprocessors
+- **Lush Cave Water Pools** - Natural water pools scattered throughout
+
+### Postprocessors
+- **Honey Drips** - Decorative honey dripping effects
+
+### Flora
+- Mixed flower cover (Substratum variant)
+- Moss carpet
+- Cave glow berries
+- Cave spore blossoms
+- Small dripleaf
+- Big dripleaf
+- Cave grass
+- Azalea bushes
+- Flowering azalea bushes
+
+## Environment
+
+Honey Grottoes are among the most lush and vibrant cave biomes. The combination of flowering plants, moss coverage, and giant bee nests creates a unique underground ecosystem. Water pools provide additional visual interest and can serve as natural water sources.
+
+<Note>
+This biome has exceptional flora diversity, making it one of the most visually complex cave biomes.
+</Note>
+
+## Palette Configuration
+
+The terrain generation uses:
+- **Sampler Type:** Cellular with domain warp
+- **Frequency:** 0.08 (surface), 0.8 (subsurface)
+- **Warp Frequency:** 0.01 (surface), 0.1 (subsurface)
+- **Dimensions:** 2D sampling
+
+Source: `/biomes/cave/substratum/honey_grotto.yml:1`

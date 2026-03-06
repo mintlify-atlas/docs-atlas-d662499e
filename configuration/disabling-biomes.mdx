@@ -1,0 +1,458 @@
+---
+title: "Disabling Biomes"
+description: "Control which cave biomes spawn and adjust their frequency"
+---
+
+## Overview
+
+Substratum allows you to control which cave biomes appear in your world and how frequently they spawn. This is done by modifying the biome extrusions file, which defines biome weights and distribution.
+
+<Note>
+  All biome configuration is located in:
+  ```
+  biome-providers/extrusions/add_substratum_cave_biomes.yml
+  ```
+</Note>
+
+## Understanding the Extrusions File
+
+The extrusions file controls how cave biomes are distributed using a weighted system:
+
+```yaml add_substratum_cave_biomes.yml
+extrusions:
+  - type: REPLACE
+    from: LAND_CAVES
+    sampler:
+      type: CELLULAR
+      return: CellValue
+      salt: 4357
+      frequency: 1 / ${substratum_meta.yml:biome-distribution.cave-biome-scale} / ${substratum_meta.yml:biome-distribution.global-scale}
+    to:
+      - SELF: 6
+      - HONEY_GROTTO: 1
+      - OVERGROWN_DUGOUT: 1
+      - SANDY_CHAMBERS: 1
+      - SUBTERRANEAN_MESA: 1
+      - MOLTEN_PASSAGES: 1
+      - TERRACOTTA_CAVES: 1
+      - MARBLE_MINES: 1
+      - AMETHYST_HOLLOW: 1
+      - FROZEN_CAVERNS: 1
+      - FUNGAL_UNDERGROWTH: 1
+      #- CORAL_COVES: 1
+      - GRANITE_MINES: 1
+      - ANDESITE_MINES: 1
+      - DIORITE_MINES: 1
+    range:
+      min: ${substratum_meta.yml:biome-distribution.cave-biome-min}
+      max: ${substratum_meta.yml:biome-distribution.cave-biome-max}
+```
+
+### Key Components
+
+<ParamField path="type" type="string" default="REPLACE">
+  Defines the extrusion type. `REPLACE` means these biomes replace the `LAND_CAVES` biome.
+</ParamField>
+
+<ParamField path="from" type="string" default="LAND_CAVES">
+  The base biome being replaced by Substratum cave biomes.
+</ParamField>
+
+<ParamField path="to" type="list">
+  A weighted list of biomes that can spawn. Each entry consists of a biome ID and a weight number.
+  
+  **Format**: `BIOME_ID: weight`
+  
+  Higher weights = more frequent spawning.
+</ParamField>
+
+<ParamField path="range.min" type="integer">
+  Minimum Y-level where these biomes can spawn. References `substratum_meta.yml`.
+</ParamField>
+
+<ParamField path="range.max" type="integer">
+  Maximum Y-level where these biomes can spawn. References `substratum_meta.yml`.
+</ParamField>
+
+## Biome Weight System
+
+Biome weights determine relative spawn frequency:
+
+### How Weights Work
+
+<Steps>
+  <Step title="Calculate Total Weight">
+    Add up all biome weights:
+    ```
+    SELF (6) + 13 biomes (1 each) = 19 total weight
+    ```
+  </Step>
+  
+  <Step title="Determine Probability">
+    Each biome's chance = its weight / total weight:
+    ```
+    SELF: 6/19 = ~31.6%
+    HONEY_GROTTO: 1/19 = ~5.3%
+    OVERGROWN_DUGOUT: 1/19 = ~5.3%
+    ...and so on
+    ```
+  </Step>
+  
+  <Step title="Apply During Generation">
+    When a cave region generates, the system randomly selects a biome based on these probabilities.
+  </Step>
+</Steps>
+
+### SELF Biome
+
+The `SELF: 6` entry is special:
+
+<Info>
+  `SELF` represents vanilla-style cave generation (dripstone caves, lush caves, etc.). With a weight of 6, approximately 31% of cave regions will use vanilla generation instead of Substratum biomes.
+</Info>
+
+## Disabling Biomes
+
+There are several methods to disable or adjust biome frequency:
+
+### Method 1: Comment Out Biomes
+
+The simplest method is to comment out biomes you don't want:
+
+```yaml add_substratum_cave_biomes.yml
+to:
+  - SELF: 6
+  - HONEY_GROTTO: 1
+  - OVERGROWN_DUGOUT: 1
+  #- SANDY_CHAMBERS: 1        # Disabled
+  - SUBTERRANEAN_MESA: 1
+  #- MOLTEN_PASSAGES: 1        # Disabled
+  - TERRACOTTA_CAVES: 1
+  - MARBLE_MINES: 1
+  - AMETHYST_HOLLOW: 1
+  #- FROZEN_CAVERNS: 1         # Disabled
+  - FUNGAL_UNDERGROWTH: 1
+  #- CORAL_COVES: 1            # Already disabled by default
+  - GRANITE_MINES: 1
+  - ANDESITE_MINES: 1
+  - DIORITE_MINES: 1
+```
+
+<Note>
+  Notice that `CORAL_COVES` is commented out by default. This biome is experimental or requires special conditions.
+</Note>
+
+### Method 2: Set Weight to Zero
+
+Alternatively, set the weight to 0 to disable:
+
+```yaml
+to:
+  - SELF: 6
+  - HONEY_GROTTO: 1
+  - SANDY_CHAMBERS: 0  # Disabled via zero weight
+  - MOLTEN_PASSAGES: 0 # Disabled via zero weight
+```
+
+<Warning>
+  Setting weight to 0 still includes the biome in the list but with no chance to spawn. Commenting out is cleaner and more performant.
+</Warning>
+
+### Method 3: Remove Lines Entirely
+
+You can completely remove biome entries:
+
+```yaml
+to:
+  - SELF: 6
+  - HONEY_GROTTO: 1
+  - OVERGROWN_DUGOUT: 1
+  # SANDY_CHAMBERS removed entirely
+  - SUBTERRANEAN_MESA: 1
+  # MOLTEN_PASSAGES removed entirely
+```
+
+## Adjusting Biome Frequency
+
+To make certain biomes more or less common, adjust their weights:
+
+### Making Biomes More Common
+
+```yaml
+to:
+  - SELF: 6
+  - HONEY_GROTTO: 5          # 5x more common than default
+  - OVERGROWN_DUGOUT: 1
+  - SANDY_CHAMBERS: 1
+  - SUBTERRANEAN_MESA: 1
+  - MOLTEN_PASSAGES: 1
+  - TERRACOTTA_CAVES: 1
+  - MARBLE_MINES: 1
+  - AMETHYST_HOLLOW: 3       # 3x more common than default
+  - FROZEN_CAVERNS: 1
+  - FUNGAL_UNDERGROWTH: 1
+  - GRANITE_MINES: 1
+  - ANDESITE_MINES: 1
+  - DIORITE_MINES: 1
+```
+
+New probabilities:
+```
+Total weight = 6 + 5 + 3 + 11 = 25
+HONEY_GROTTO: 5/25 = 20%
+AMETHYST_HOLLOW: 3/25 = 12%
+Other biomes: 1/25 = 4% each
+```
+
+### Making Biomes Rarer
+
+Use fractional weights for very rare biomes:
+
+```yaml
+to:
+  - SELF: 6
+  - HONEY_GROTTO: 1
+  - OVERGROWN_DUGOUT: 1
+  - SANDY_CHAMBERS: 1
+  - SUBTERRANEAN_MESA: 1
+  - MOLTEN_PASSAGES: 0.2     # Very rare
+  - TERRACOTTA_CAVES: 1
+  - MARBLE_MINES: 1
+  - AMETHYST_HOLLOW: 1
+  - FROZEN_CAVERNS: 0.5      # Somewhat rare
+  - FUNGAL_UNDERGROWTH: 1
+  - GRANITE_MINES: 1
+  - ANDESITE_MINES: 1
+  - DIORITE_MINES: 1
+```
+
+## Common Configuration Scenarios
+
+<AccordionGroup>
+  <Accordion title="Only Substratum Biomes" icon="cave">
+    Remove vanilla cave generation entirely:
+    
+    ```yaml
+    to:
+      #- SELF: 6               # Disabled vanilla caves
+      - HONEY_GROTTO: 1
+      - OVERGROWN_DUGOUT: 1
+      - SANDY_CHAMBERS: 1
+      - SUBTERRANEAN_MESA: 1
+      - MOLTEN_PASSAGES: 1
+      - TERRACOTTA_CAVES: 1
+      - MARBLE_MINES: 1
+      - AMETHYST_HOLLOW: 1
+      - FROZEN_CAVERNS: 1
+      - FUNGAL_UNDERGROWTH: 1
+      - GRANITE_MINES: 1
+      - ANDESITE_MINES: 1
+      - DIORITE_MINES: 1
+    ```
+  </Accordion>
+  
+  <Accordion title="More Vanilla Caves" icon="mountain">
+    Increase vanilla cave generation:
+    
+    ```yaml
+    to:
+      - SELF: 20              # Much more vanilla generation
+      - HONEY_GROTTO: 1
+      - OVERGROWN_DUGOUT: 1
+      # ...rest of biomes
+    ```
+  </Accordion>
+  
+  <Accordion title="Themed World - No Mine Biomes" icon="ban">
+    Disable all mine-themed biomes:
+    
+    ```yaml
+    to:
+      - SELF: 6
+      - HONEY_GROTTO: 1
+      - OVERGROWN_DUGOUT: 1
+      - SANDY_CHAMBERS: 1
+      - SUBTERRANEAN_MESA: 1
+      - MOLTEN_PASSAGES: 1
+      - TERRACOTTA_CAVES: 1
+      #- MARBLE_MINES: 1       # Disabled
+      - AMETHYST_HOLLOW: 1
+      - FROZEN_CAVERNS: 1
+      - FUNGAL_UNDERGROWTH: 1
+      #- GRANITE_MINES: 1      # Disabled
+      #- ANDESITE_MINES: 1     # Disabled
+      #- DIORITE_MINES: 1      # Disabled
+    ```
+  </Accordion>
+  
+  <Accordion title="Single Biome World" icon="globe">
+    Create a world with only one Substratum biome:
+    
+    ```yaml
+    to:
+      #- SELF: 6               # Disabled
+      - HONEY_GROTTO: 1       # Only this biome will spawn
+      #- OVERGROWN_DUGOUT: 1  # All others disabled
+      #- SANDY_CHAMBERS: 1
+      #- SUBTERRANEAN_MESA: 1
+      #- MOLTEN_PASSAGES: 1
+      #- TERRACOTTA_CAVES: 1
+      #- MARBLE_MINES: 1
+      #- AMETHYST_HOLLOW: 1
+      #- FROZEN_CAVERNS: 1
+      #- FUNGAL_UNDERGROWTH: 1
+      #- GRANITE_MINES: 1
+      #- ANDESITE_MINES: 1
+      #- DIORITE_MINES: 1
+    ```
+  </Accordion>
+  
+  <Accordion title="Favorite Biomes Only" icon="star">
+    Keep only your favorite biomes:
+    
+    ```yaml
+    to:
+      - SELF: 3               # Some vanilla caves
+      - HONEY_GROTTO: 2       # Favorite - more common
+      #- OVERGROWN_DUGOUT: 1  # Not a favorite
+      #- SANDY_CHAMBERS: 1    # Not a favorite
+      #- SUBTERRANEAN_MESA: 1 # Not a favorite
+      - MOLTEN_PASSAGES: 2    # Favorite - more common
+      #- TERRACOTTA_CAVES: 1  # Not a favorite
+      #- MARBLE_MINES: 1      # Not a favorite
+      - AMETHYST_HOLLOW: 2    # Favorite - more common
+      - FROZEN_CAVERNS: 2     # Favorite - more common
+      #- FUNGAL_UNDERGROWTH: 1 # Not a favorite
+      #- GRANITE_MINES: 1     # Not a favorite
+      #- ANDESITE_MINES: 1    # Not a favorite
+      #- DIORITE_MINES: 1     # Not a favorite
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Available Biomes
+
+Here's a complete list of all Substratum biomes you can enable/disable:
+
+| Biome ID | Description | Default Status |
+|----------|-------------|----------------|
+| `SELF` | Vanilla cave generation | Enabled (weight: 6) |
+| `HONEY_GROTTO` | Sweet caves with bee nests | Enabled |
+| `OVERGROWN_DUGOUT` | Mossy, overgrown caves | Enabled |
+| `SANDY_CHAMBERS` | Sand and sandstone caves | Enabled |
+| `SUBTERRANEAN_MESA` | Mesa-themed underground | Enabled |
+| `MOLTEN_PASSAGES` | Lava-filled dangerous caves | Enabled |
+| `TERRACOTTA_CAVES` | Colorful terracotta formations | Enabled |
+| `MARBLE_MINES` | Calcite and marble caves | Enabled |
+| `AMETHYST_HOLLOW` | Crystalline amethyst caves | Enabled |
+| `FROZEN_CAVERNS` | Icy caves with icicles | Enabled |
+| `FUNGAL_UNDERGROWTH` | Mushroom-filled caves | Enabled |
+| `CORAL_COVES` | Underwater coral caves | Disabled by default |
+| `GRANITE_MINES` | Granite mining caves | Enabled |
+| `ANDESITE_MINES` | Andesite mining caves | Enabled |
+| `DIORITE_MINES` | Diorite mining caves | Enabled |
+
+<Info>
+  For detailed information about each biome, see the [Cave Biomes](/biomes/overview) section.
+</Info>
+
+## Applying Configuration Changes
+
+<Steps>
+  <Step title="Edit Extrusions File">
+    Open `biome-providers/extrusions/add_substratum_cave_biomes.yml` and make your changes.
+  </Step>
+  
+  <Step title="Save File">
+    Ensure your YAML syntax is correct (proper indentation, no typos).
+  </Step>
+  
+  <Step title="Reload Terra">
+    Apply changes with `/terra reload` or restart your server.
+  </Step>
+  
+  <Step title="Generate New Chunks">
+    Travel to unexplored areas to see your biome configuration in action.
+  </Step>
+</Steps>
+
+<Warning>
+  Biome configuration changes only affect newly generated chunks. Already explored areas will retain their original biome distribution.
+</Warning>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Changes Not Taking Effect" icon="circle-question">
+    **Causes:**
+    - Didn't reload Terra after making changes
+    - Testing in already-generated chunks
+    - YAML syntax errors
+    
+    **Solutions:**
+    1. Run `/terra reload` in-game
+    2. Travel to completely unexplored areas (thousands of blocks away)
+    3. Check server console for YAML parsing errors
+    4. Validate YAML syntax with an online validator
+  </Accordion>
+  
+  <Accordion title="Only One Biome Spawning" icon="exclamation">
+    **Cause:** All other biomes are disabled or have weight 0.
+    
+    **Solution:** Check your `to:` list and ensure multiple biomes have weights > 0.
+  </Accordion>
+  
+  <Accordion title="No Substratum Biomes Spawning" icon="ban">
+    **Causes:**
+    - All Substratum biomes disabled, only `SELF` enabled
+    - Y-level range doesn't match generation area
+    
+    **Solutions:**
+    1. Ensure at least one Substratum biome has weight > 0
+    2. Check `range.min` and `range.max` match your exploration altitude
+    3. Verify `substratum_meta.yml` cave-biome-min/max settings
+  </Accordion>
+  
+  <Accordion title="Terra Reload Error" icon="triangle-exclamation">
+    **Cause:** YAML syntax error in extrusions file.
+    
+    **Solution:**
+    - Check indentation (must use spaces, not tabs)
+    - Ensure colons have spaces after them: `BIOME: 1` not `BIOME:1`
+    - Verify all comment lines start with `#`
+    - Look for special characters or typos
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Biome Overview"
+    icon="mountain"
+    href="/biomes/overview"
+  >
+    Learn about all available cave biomes
+  </Card>
+  <Card
+    title="Biome Distribution"
+    icon="chart-network"
+    href="/configuration/biome-distribution"
+  >
+    Adjust biome scale and size
+  </Card>
+  <Card
+    title="Configuration Overview"
+    icon="gear"
+    href="/configuration/overview"
+  >
+    Back to configuration home
+  </Card>
+  <Card
+    title="Troubleshooting"
+    icon="wrench"
+    href="/resources/troubleshooting"
+  >
+    Fix common configuration issues
+  </Card>
+</CardGroup>

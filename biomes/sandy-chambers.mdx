@@ -1,0 +1,58 @@
+---
+title: Sandy Chambers
+description: Desert-like underground caves with sand formations
+---
+
+Sandy Chambers are desert-themed caves featuring sand, sandstone, and dramatic sand-based formations.
+
+## Overview
+
+**Biome ID:** `SANDY_CHAMBERS`  
+**Vanilla Replacement:** `minecraft:dripstone_caves`  
+**Color Code:** `#BAB675`
+
+## Terrain Palette
+
+Sandy Chambers use desert materials:
+
+### Surface Layer (1 block deep)
+- Stone
+- Sand (dominant)
+- Sandstone
+- Smooth Sandstone
+
+### Subsurface Layer (1 block deep)
+- Stone
+- Sandstone
+- Smooth Sandstone (dominant)
+
+### Deepslate Transition
+Below Y-level 7, terrain uses the `SANDY_CHAMBERS_DEEPSLATE` palette.
+
+## Features
+
+### Landforms
+- **Giant Sand Stalacmites** - Massive sand formations rising from cave floors
+- **Giant Sand Stalactites** - Large sand formations hanging from ceilings
+
+## Environment
+
+Sandy Chambers bring the desert underground. The combination of sand and sandstone creates natural desert caves, while the giant sand formations add dramatic vertical elements. These caves feel like natural erosion chambers beneath desert surfaces.
+
+<Note>
+The giant sand formations are structurally stable despite being made of sand, creating impressive spires and hanging features that would normally collapse.
+</Note>
+
+<Note>
+Sandy Chambers are excellent sources of sand and sandstone for building projects.
+</Note>
+
+## Palette Configuration
+
+The terrain generation uses:
+- **Sampler Type:** Cellular with domain warp
+- **Frequency:** 0.08 (surface), 0.8 (subsurface)
+- **Warp Frequency:** 0.01 (surface), 0.1 (subsurface)
+- **Dimensions:** 2D sampling
+
+Source: `/biomes/cave/substratum/sandy_chambers.yml:1`

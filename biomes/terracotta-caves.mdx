@@ -1,0 +1,64 @@
+---
+title: Terracotta Caves
+description: Colorful caves with rainbow terracotta stripes
+---
+
+Terracotta Caves feature vibrant bands of colored terracotta in all 16 colors, creating rainbow-striped underground chambers.
+
+## Overview
+
+**Biome ID:** `TERRACOTTA_CAVES`  
+**Vanilla Replacement:** `minecraft:dripstone_caves`  
+**Color Code:** `#664F37`
+
+## Terrain Palette
+
+Terracotta Caves use all 16 terracotta colors:
+
+### Single Layer (1 block deep)
+- Red Terracotta
+- Blue Terracotta
+- Green Terracotta
+- Yellow Terracotta
+- Black Terracotta
+- Purple Terracotta
+- Gray Terracotta
+- Light Gray Terracotta
+- Magenta Terracotta
+- White Terracotta
+- Orange Terracotta
+- Lime Terracotta
+- Light Blue Terracotta
+- Pink Terracotta
+- Brown Terracotta
+- Cyan Terracotta
+- Stone (alternating)
+
+### Deepslate Transition
+Below Y-level 7, terrain uses the `TERRACOTTA_CAVES_DEEPSLATE` palette.
+
+<Note>
+The palette alternates between each terracotta color and stone, creating a striped pattern of rainbow colors throughout the caves.
+</Note>
+
+## Features
+
+Terracotta Caves are primarily defined by their colorful terrain palette and do not include additional feature decorations.
+
+## Environment
+
+Terracotta Caves are the most colorful cave biome in Substratum. The alternating bands of all 16 terracotta colors create a psychedelic, rainbow-like effect underground. Unlike Subterranean Mesa which uses earth tones, Terracotta Caves embrace the full color spectrum.
+
+<Note>
+This biome is excellent for gathering terracotta in all colors without needing to smelt and dye clay blocks.
+</Note>
+
+## Palette Configuration
+
+The terrain generation uses:
+- **Sampler Type:** Cellular with domain warp
+- **Frequency:** 0.08
+- **Warp Frequency:** 0.9 (high warp creates more varied patterns)
+- **Dimensions:** 2D sampling
+
+Source: `/biomes/cave/substratum/terracotta_caves.yml:1`

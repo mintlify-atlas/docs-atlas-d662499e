@@ -1,0 +1,179 @@
+---
+title: "Configuration Overview"
+description: "Understand Substratum's configuration system and how to customize your underground world"
+---
+
+## Introduction
+
+Substratum provides a flexible configuration system that allows you to customize various aspects of cave generation, biome distribution, and world structure. All configuration files are located in the pack's root directory and use YAML format.
+
+## Configuration Files
+
+Substratum's configuration is split across several key files:
+
+<CardGroup cols={2}>
+  <Card
+    title="substratum_meta.yml"
+    icon="gear"
+  >
+    Main configuration file containing biome distribution parameters and strata layer settings
+  </Card>
+  <Card
+    title="add_substratum_cave_biomes.yml"
+    icon="mountain"
+  >
+    Controls which cave biomes spawn and their relative frequency
+  </Card>
+</CardGroup>
+
+## Key Configuration Areas
+
+### Biome Distribution
+
+Control how biomes are placed and scaled throughout the world:
+
+- **Global Scale**: Affects the size of all biomes uniformly
+- **Cave Scale**: Controls the scale of cave foundation generation
+- **Cave Biome Scale**: Determines the size of individual cave biome regions
+
+<Card
+  title="Biome Distribution Guide"
+  icon="sliders"
+  href="/configuration/biome-distribution"
+>
+  Learn about all biome distribution parameters and their effects
+</Card>
+
+### Y-Level Ranges
+
+Define the vertical boundaries for cave generation:
+
+- **Cave Biome Min/Max**: Controls where cave biomes can generate
+- **Substratum Carving Min/Max**: Defines the range for cave carving
+
+### Strata Layers
+
+Customize the underground layering system:
+
+- **Deepslate Transition**: Configure where stone transitions to deepslate
+- **Bedrock Layers**: Set the Y-levels for bedrock generation
+- **Bedrock Top**: Configure the top bedrock layer (roof of the world)
+
+<Card
+  title="Strata Layer Configuration"
+  icon="layer-group"
+  href="/configuration/strata-layers"
+>
+  Configure deepslate transitions and bedrock layers
+</Card>
+
+### Biome Weights
+
+Adjust which biomes appear more or less frequently by modifying their weights in the extrusions file.
+
+<Card
+  title="Disabling Biomes"
+  icon="toggle-off"
+  href="/configuration/disabling-biomes"
+>
+  Learn how to disable or adjust the frequency of specific biomes
+</Card>
+
+## Configuration Workflow
+
+<Steps>
+  <Step title="Locate Configuration Files">
+    Navigate to your Terra packs directory. Configuration files are located in:
+    ```
+    plugins/Terra/packs/Substratum/
+    ```
+  </Step>
+  
+  <Step title="Edit Configuration">
+    Open `substratum_meta.yml` or the relevant extrusions file in a text editor. Make your desired changes following the parameter documentation.
+  </Step>
+  
+  <Step title="Reload Terra">
+    After making changes, reload Terra to apply your configuration:
+    ```bash
+    /terra reload
+    ```
+    
+    <Warning>
+      Configuration changes only affect newly generated chunks. Existing chunks will retain their original generation settings.
+    </Warning>
+  </Step>
+  
+  <Step title="Test in New Chunks">
+    Travel to unexplored areas or create a new world to see your configuration changes take effect.
+  </Step>
+</Steps>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Back Up Your Configuration" icon="floppy-disk">
+    Always create a backup of your configuration files before making changes. This allows you to quickly revert if something goes wrong:
+    ```bash
+    cp substratum_meta.yml substratum_meta.yml.backup
+    ```
+  </Accordion>
+  
+  <Accordion title="Test Changes in a Test World" icon="flask">
+    Before applying configuration changes to your main server, test them in a separate test world to ensure they produce the desired results.
+  </Accordion>
+  
+  <Accordion title="Make Incremental Changes" icon="stairs">
+    Change one parameter at a time so you can easily identify which changes produce which effects. This makes troubleshooting much easier.
+  </Accordion>
+  
+  <Accordion title="Document Your Changes" icon="file-lines">
+    Add comments to your configuration files explaining what you changed and why. This helps you remember your reasoning later:
+    ```yaml
+    global-scale: 2 # Doubled to make biomes twice as large
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Understanding Meta-Configuration
+
+Substratum uses Terra's meta-configuration system, which allows values from `substratum_meta.yml` to be injected into other configuration files. You'll see references like:
+
+```yaml
+${substratum_meta.yml:biome-distribution.global-scale}
+```
+
+This system enables centralized configuration management - you can change a value in `substratum_meta.yml` and it automatically updates everywhere that value is used.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Biome Distribution"
+    icon="chart-network"
+    href="/configuration/biome-distribution"
+  >
+    Configure biome scales and Y-level ranges
+  </Card>
+  <Card
+    title="Strata Layers"
+    icon="layer-group"
+    href="/configuration/strata-layers"
+  >
+    Customize deepslate and bedrock generation
+  </Card>
+  <Card
+    title="Disable Biomes"
+    icon="ban"
+    href="/configuration/disabling-biomes"
+  >
+    Remove or adjust biome frequency
+  </Card>
+  <Card
+    title="Troubleshooting"
+    icon="screwdriver-wrench"
+    href="/resources/troubleshooting"
+  >
+    Fix common configuration issues
+  </Card>
+</CardGroup>

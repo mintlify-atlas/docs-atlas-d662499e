@@ -1,0 +1,63 @@
+---
+title: Subterranean Mesa
+description: Underground badlands with layered terracotta patterns
+---
+
+Subterranean Mesa biomes bring the distinctive layered terracotta patterns of surface badlands deep underground.
+
+## Overview
+
+**Biome ID:** `SUBTERRANEAN_MESA`  
+**Vanilla Replacement:** `minecraft:dripstone_caves`  
+**Color Code:** `#B87218`
+
+## Terrain Palette
+
+Subterranean Mesa uses a complex multi-layer system:
+
+### Upper Layers (3 blocks deep)
+- Stone
+- Red Sand
+- Smooth Red Sandstone
+
+### Middle Layer (2 blocks deep)
+- Red Sandstone
+
+### Banded Terracotta Layer (1 block deep)
+- Brown Terracotta
+- Pink Terracotta
+- Terracotta (uncolored)
+- Light Gray Terracotta
+- White Terracotta
+- Orange Terracotta
+- Yellow Terracotta
+
+### Deepslate Transition
+Below Y-level 7, terrain uses the `SUBTERRANEAN_MESA_DEEPSLATE` palette.
+
+<Note>
+The banded terracotta layer uses a special expression-based sampler that creates horizontal striping patterns similar to surface mesa biomes.
+</Note>
+
+## Features
+
+Subterranean Mesa is primarily defined by its terrain palette and does not include additional feature decorations.
+
+## Environment
+
+Subterranean Mesa biomes recreate the iconic look of badlands underground. The layered terracotta creates natural horizontal bands of color that shift as you move through the caves. The red sand and sandstone provide a distinctive desert-cave aesthetic.
+
+<Note>
+The vertical banding pattern is achieved using an expression sampler that offsets Y-coordinates based on X-Z position, creating the characteristic mesa stratification.
+</Note>
+
+## Palette Configuration
+
+The terrain generation uses:
+- **Upper/Middle Layers:** Cellular with domain warp (frequency 0.08)
+- **Banded Layer:** Expression-based 3D sampler
+  - Noise frequency: 0.2
+  - FBM offset with 2 octaves
+  - Frequency: 0.005
+
+Source: `/biomes/cave/substratum/subterranean_mesa.yml:1`

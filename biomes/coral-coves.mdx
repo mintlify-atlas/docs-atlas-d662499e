@@ -1,0 +1,73 @@
+---
+title: Coral Coves
+description: Flooded underwater caves with vibrant coral reefs
+---
+
+Coral Coves are unique flooded cave biomes featuring underwater coral reefs, sea pickles, and kelp forests in underground chambers.
+
+## Overview
+
+**Biome ID:** `CORAL_COVES`  
+**Vanilla Replacement:** `minecraft:dripstone_caves`  
+**Color Code:** `#033DFC`
+
+<Warning>
+Coral Coves are **disabled by default** in Substratum. To enable this biome, you must modify the biome configuration files.
+</Warning>
+
+## Terrain Palette
+
+Coral Coves use coastal materials:
+
+### Surface Layers (2 blocks deep)
+- Stone
+- Sand
+- Gravel
+
+### Subsurface Layer (1 block deep)
+- Stone
+- Smooth Sandstone
+- Andesite
+
+### Deepslate Transition
+Below Y-level 7, terrain uses the `CORAL_COVES_DEEPSLATE` palette.
+
+## Features
+
+### Preprocessors
+- **Place Water** - Floods the cave with water
+
+### Landforms
+- **Place Valid Air** - Creates air pockets where appropriate
+
+### Flora
+- Cave coral fans
+- Cave coral wall fans
+- Cave sea pickles
+- Cave coral plants
+- Cave dendriform reef (branching coral)
+- Cave ball reef (boulder coral)
+- Cave seagrass
+- Cave kelp
+
+## Environment
+
+Coral Coves bring vibrant underwater ecosystems into cave systems. These flooded chambers feature full coral reef biomes underground, complete with all varieties of coral, sea pickles for lighting, and kelp forests. The blue color code reflects the underwater nature of these caves.
+
+<Note>
+Unlike surface coral reefs, cave coral variants are specially configured to generate in enclosed underground spaces.
+</Note>
+
+<Warning>
+Exploring Coral Coves requires water breathing potions or respiration enchantments, as these caves are completely flooded.
+</Warning>
+
+## Palette Configuration
+
+The terrain generation uses:
+- **Sampler Type:** Cellular with domain warp
+- **Frequency:** 0.08 (surface), 0.8 (subsurface)
+- **Warp Frequency:** 0.01 (surface), 0.1 (subsurface)
+- **Dimensions:** 2D sampling
+
+Source: `/biomes/cave/substratum/coral_coves.yml:1`

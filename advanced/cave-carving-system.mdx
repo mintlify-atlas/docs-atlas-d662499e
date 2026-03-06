@@ -1,0 +1,292 @@
+---
+title: Cave Carving System
+description: Technical details of Substratum's 3D noise-based cave carving algorithm
+---
+
+Substratum uses a sophisticated 3D noise-based carving system to generate diverse and realistic cave networks. The carving system combines multiple cave generation techniques to create varied underground environments.
+
+## Overview
+
+The cave carving system is defined in `carving_substratum.yml` and uses a 3D expression-based sampler that combines:
+
+- **Spaghetti Caves**: Long, winding tunnels created with simplex noise
+- **Cheese Caves**: Large caverns with irregular shapes
+- **Mega Caves**: Massive underground chambers
+- **Pillars**: Structural support columns within large caves
+
+<Note>
+The carving system operates on a **carving threshold** model: when the combined noise value exceeds the threshold, terrain is carved out to create cave space.
+</Note>
+
+## Carving Configuration
+
+Here's the core carving configuration from `carving_substratum.yml`:
+
+```yaml
+carving:
+  sampler:
+    dimensions: 3
+    type: EXPRESSION
+    variables:
+      # Base carving parameters
+      carvingThreshold: 0.55 # Higher = less carving
+      carvingMinHeight: -63
+      carvingMaxHeight: 300
+      carvingMinTaper: 8
+      carvingMaxTaper: 20
+      carvingCap: 1 # Caps the amount of base carving
+
+      # Cheese cave parameters
+      cheeseStrength: 0.8
+      cheeseHorizontalFrequency: 1.5
+      cheeseVerticalFrequency: 3
+      cheeseMaxHeight: 90
+      cheeseMaxTaper: 40
+
+      # Spaghetti cave parameters
+      spaghettiStrengthLarge: 0.59
+      spaghettiStrengthSmall: 0.57
+
+      # Pillar parameters
+      pillarStrength: 0.5
+      pillarRadius: 0.02
+
+      # Mega cave parameters
+      megaCaveStrength: 0.3
+      megaCaveSize: 0.3
+```
+
+## Cave Generation Types
+
+### Spaghetti Caves
+
+Spaghetti caves create long, winding tunnels that snake through the underground. The system uses two layers of simplex noise to create variation:
+
+```yaml
+# Large spaghetti caves
+spaghettiStrengthLarge * ((-(|simplex3(x,y+0000,z)|+|simplex3(x,y+1000,z)|)/2)+1)
+
+# Small spaghetti caves
+spaghettiStrengthSmall * ((-(|simplex3(x,y+2000,z)|+|simplex3(x,y+3000,z)|)/2)+1)
+```
+
+**Parameters:**
+- `spaghettiStrengthLarge`: Controls the intensity of large tunnel carving (default: 0.59)
+- `spaghettiStrengthSmall`: Controls the intensity of small tunnel carving (default: 0.57)
+
+<Accordion title="Technical Details">
+Spaghetti caves use the absolute value of two offset simplex noise functions, averaged together. This creates tubular structures by carving where the combined noise is low. The Y-offset (1000, 2000, 3000) ensures each layer samples different regions of the noise field.
+</Accordion>
+
+### Cheese Caves
+
+Cheese caves create large, irregular caverns with a "swiss cheese" appearance. They use domain-warped 3D simplex noise:
+
+```yaml
+cheeseStrength * (simplex3(
+  x * cheeseHorizontalFrequency,
+  (y + simplex2(x, z) * 5) * cheeseVerticalFrequency,
+  z * cheeseHorizontalFrequency
+)+1)/2
+```
+
+**Parameters:**
+- `cheeseStrength`: Overall intensity of cheese cave carving (default: 0.8)
+- `cheeseHorizontalFrequency`: Horizontal stretch of caverns (default: 1.5)
+- `cheeseVerticalFrequency`: Vertical stretch of caverns (default: 3)
+- `cheeseMaxHeight`: Maximum Y-level for cheese caves (default: 90)
+- `cheeseMaxTaper`: Vertical taper distance at max height (default: 40)
+
+<Note>
+Cheese caves are **only generated below Y=90** to prevent them from breaking through to the surface.
+</Note>
+
+### Mega Caves
+
+Mega caves create massive underground chambers using very low-frequency noise:
+
+```yaml
+megaCaves:
+  dimensions: 3
+  type: OPEN_SIMPLEX_2
+  salt: 777
+  frequency: 0.003
+```
+
+**Parameters:**
+- `megaCaveStrength`: Intensity of mega cave carving (default: 0.3)
+- `megaCaveSize`: Threshold for mega cave formation (default: 0.3)
+- `frequency`: 0.003 (very low frequency creates large features)
+
+<Accordion title="Understanding Frequency">
+The frequency of 0.003 means the noise pattern repeats roughly every 333 blocks (1/0.003). This creates massive chambers that can span hundreds of blocks.
+</Accordion>
+
+### Cave Pillars
+
+Pillars provide structural support in large caverns using cellular noise:
+
+```yaml
+cavePillars:
+  dimensions: 2
+  type: CELLULAR
+  frequency: 0.05
+```
+
+**Parameters:**
+- `pillarStrength`: How strongly pillars prevent carving (default: 0.5)
+- `pillarRadius`: Size of pillar protection radius (default: 0.02)
+- `frequency`: 0.05 (creates pillar centers every ~20 blocks)
+
+<Note>
+Pillars use **2D cellular noise** (X and Z only), creating vertical columns that extend through cave layers.
+</Note>
+
+## Height Ranges and Tapering
+
+The carving system uses sophisticated height-based tapering to smoothly transition caves at vertical boundaries:
+
+### Height Parameters
+
+```yaml
+carvingMinHeight: -63  # Bottom of cave generation
+carvingMaxHeight: 300  # Top of cave generation
+carvingMinTaper: 8     # Taper distance at bottom
+carvingMaxTaper: 20    # Taper distance at top
+```
+
+### Taper Function
+
+The `maskSmooth` function creates smooth transitions:
+
+```yaml
+maskSmooth(value, heightMax, heightMin, currentY)
+```
+
+- Below `heightMin`: Carving is fully disabled
+- Between `heightMin` and `heightMax`: Carving smoothly increases
+- Above `heightMax`: Carving is at full strength
+
+<Accordion title="Example: Bottom Taper">
+```yaml
+maskSmooth(carvingValue, carvingMinHeight, carvingMinHeight + carvingMinTaper, y)
+```
+
+With `carvingMinHeight: -63` and `carvingMinTaper: 8`:
+- At Y=-63: 0% carving strength
+- At Y=-55: 100% carving strength
+- Between: Linear interpolation
+</Accordion>
+
+## Noise Samplers
+
+The carving system uses several noise types:
+
+### Simplex3 (3D Simplex)
+
+```yaml
+simplex3:
+  dimensions: 3
+  type: FBM
+  octaves: 2
+  sampler:
+    type: OPEN_SIMPLEX_2
+    frequency: 0.0075
+```
+
+Used for spaghetti and cheese caves. The FBM (Fractal Brownian Motion) with 2 octaves adds detail.
+
+### Simplex2 (2D Simplex)
+
+```yaml
+simplex2:
+  dimensions: 2
+  type: LINEAR
+  min: -0.9
+  max: 0.9
+  sampler:
+    type: FBM
+    octaves: 4
+    sampler:
+      type: OPEN_SIMPLEX_2
+      frequency: 0.0075
+```
+
+Used for domain warping in cheese caves. The 4 octaves create more detailed warping.
+
+## Tuning Cave Generation
+
+You can adjust cave characteristics by modifying parameters:
+
+### More Caves
+```yaml
+carvingThreshold: 0.45  # Lower threshold = more carving
+```
+
+### Larger Caverns
+```yaml
+cheeseStrength: 1.0
+cheeseHorizontalFrequency: 1.0  # Lower = wider caves
+```
+
+### Taller Caves
+```yaml
+carvingMaxHeight: 350  # Extend caves higher
+cheeseMaxHeight: 120   # Extend cheese caves higher
+```
+
+### More Mega Caves
+```yaml
+megaCaveStrength: 0.5  # Increase strength
+megaCaveSize: 0.4      # Increase threshold
+```
+
+<Note>
+Be careful when adjusting `carvingThreshold` - small changes can dramatically affect cave density. Values above 0.6 may result in very few caves, while values below 0.5 may create excessive carving.
+</Note>
+
+## Complete Expression Structure
+
+The carving expression combines all systems with proper height masking:
+
+```yaml
+expression: |
+  -carvingThreshold
+  + if(y<carvingMinHeight||y>carvingMaxHeight,0,maskSmooth(maskSmooth(
+    min(carvingCap,
+      max(
+        # Spaghetti Caves (always active)
+        max(
+          spaghettiStrengthLarge * ((-(|simplex3(x,y,z)|+|simplex3(x,y+1000,z)|)/2)+1),
+          spaghettiStrengthSmall * ((-(|simplex3(x,y+2000,z)|+|simplex3(x,y+3000,z)|)/2)+1)
+        ),
+        # Cheese caves (only below cheeseMaxHeight)
+        if(y>cheeseMaxHeight,0,
+          maskSmooth(
+            cheeseStrength * (simplex3(...)+1)/2
+            + megaCaves contribution
+            - pillars contribution,
+            cheeseMaxHeight, cheeseMaxHeight - cheeseMaxTaper, y
+          )
+        )
+      )
+    ),
+    # Bottom taper
+    carvingMinHeight, carvingMinHeight + carvingMinTaper, y
+    ),
+    # Top taper
+    carvingMaxHeight, carvingMaxHeight - carvingMaxTaper, y
+  ))
+```
+
+The expression:
+1. Starts with negative threshold
+2. Adds combined cave generation values
+3. Applies height checks and tapering
+4. Carves where the result is positive
+
+## See Also
+
+- [Custom Features](/advanced/custom-features) - Learn how features populate carved caves
+- [Palette System](/advanced/palette-system) - Understand how cave walls are textured
+- [Cave Biomes](/biomes/cave-biomes) - Explore different cave biome types

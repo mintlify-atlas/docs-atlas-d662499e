@@ -1,0 +1,363 @@
+---
+title: "Strata Layers"
+description: "Configure deepslate transitions and bedrock generation"
+---
+
+## Overview
+
+Strata layers control the vertical layering of underground materials in Substratum. The strata system determines where stone transitions to deepslate and where bedrock generates at the top and bottom of the world.
+
+All strata configuration is found in `substratum_meta.yml` under the `strata` section.
+
+## Strata System
+
+Substratum's strata system consists of three main layers:
+
+<CardGroup cols={3}>
+  <Card title="Deepslate" icon="layer-group">
+    Gradual transition from stone to deepslate in deep underground areas
+  </Card>
+  <Card title="Bottom Bedrock" icon="chess-board">
+    Unbreakable bedrock layer at the bottom of the world
+  </Card>
+  <Card title="Top Bedrock" icon="chess-board">
+    Bedrock ceiling at the top of the world (for fully underground worlds)
+  </Card>
+</CardGroup>
+
+## Deepslate Configuration
+
+The deepslate layer creates a gradual transition from stone to deepslate as you descend underground.
+
+### Deepslate Top
+
+<ParamField path="strata.deepslate.top" type="integer" default="7">
+  Y-level where deepslate begins to mix with stone. Above this level, terrain is 100% stone. At and below this level, deepslate starts appearing.
+  
+  **Default**: 7
+  
+  **Effect**: Higher values mean deepslate appears closer to the surface. Lower values push deepslate deeper underground.
+</ParamField>
+
+### Deepslate Bottom
+
+<ParamField path="strata.deepslate.bottom" type="integer" default="-7">
+  Y-level where all stone is fully replaced by deepslate. Below this level, terrain is 100% deepslate (before bedrock).
+  
+  **Default**: -7
+  
+  **Effect**: The range between `top` and `bottom` creates a gradient transition zone.
+</ParamField>
+
+**Example Configuration:**
+
+```yaml
+strata:
+  deepslate:
+    top: 7      # Deepslate starts mixing with stone at Y=7
+    bottom: -7  # Full deepslate below Y=-7
+```
+
+### How Deepslate Transition Works
+
+<Steps>
+  <Step title="Above Top Level (Y > 7)">
+    100% stone - no deepslate generates
+  </Step>
+  
+  <Step title="Transition Zone (Y = 7 to -7)">
+    Gradual mix of stone and deepslate, with more deepslate as you go deeper
+  </Step>
+  
+  <Step title="Below Bottom Level (Y < -7)">
+    100% deepslate - no stone generates (until bedrock layer)
+  </Step>
+</Steps>
+
+## Bedrock Configuration
+
+Bedrock layers create unbreakable boundaries at the top and bottom of the world.
+
+### Bottom Bedrock
+
+The bottom bedrock layer prevents players from falling into the void.
+
+<ParamField path="strata.bedrock.top" type="integer" default="-60">
+  Y-level where bedrock begins to replace deepslate at the bottom of the world.
+  
+  **Default**: -60
+</ParamField>
+
+<ParamField path="strata.bedrock.bottom" type="integer" default="-64">
+  Y-level where all deepslate is fully replaced by bedrock. This is typically the world's minimum Y-level.
+  
+  **Default**: -64 (Minecraft's minimum Y-level)
+</ParamField>
+
+**Example Configuration:**
+
+```yaml
+strata:
+  bedrock:
+    top: -60    # Bedrock starts at Y=-60
+    bottom: -64 # Solid bedrock at Y=-64
+```
+
+### Top Bedrock
+
+The top bedrock layer creates a ceiling for fully underground worlds.
+
+<ParamField path="strata.bedrock-top.top" type="integer" default="319">
+  Highest Y-level where bedrock generates at the world ceiling.
+  
+  **Default**: 319 (just below Minecraft's maximum Y-level)
+</ParamField>
+
+<ParamField path="strata.bedrock-top.bottom" type="integer" default="316">
+  Y-level where the bedrock ceiling begins. Between this and `top`, bedrock gradually fills in.
+  
+  **Default**: 316
+</ParamField>
+
+**Example Configuration:**
+
+```yaml
+strata:
+  bedrock-top:
+    top: 319    # Solid bedrock ceiling at Y=319
+    bottom: 316 # Bedrock starts at Y=316
+```
+
+<Note>
+  The top bedrock layer is primarily used in standalone Substratum worlds. When using drop-in merge with surface worlds, you may want to disable or adjust this layer.
+</Note>
+
+## Complete Strata Configuration
+
+Here's the complete default strata configuration from `substratum_meta.yml`:
+
+```yaml substratum_meta.yml
+strata:
+  # Deepslate layer - gradual transition from stone to deepslate
+  deepslate:
+    top: 7      # Stone starts becoming deepslate
+    bottom: -7  # Fully deepslate below this point
+  
+  # Bottom bedrock - prevents void fall
+  bedrock:
+    top: -60    # Bedrock begins
+    bottom: -64 # Solid bedrock floor
+  
+  # Top bedrock - creates underground world ceiling
+  bedrock-top:
+    top: 319    # Solid bedrock ceiling
+    bottom: 316 # Bedrock starts appearing
+```
+
+## Palette Integration
+
+The strata configuration is automatically integrated into terrain palettes through meta-configuration:
+
+### Palette Top
+
+```yaml
+palette-top:
+  - BLOCK:minecraft:bedrock: $substratum_meta.yml:strata.bedrock-top.top
+```
+
+This adds the top bedrock layer to every terrain palette.
+
+### Palette Bottom
+
+```yaml
+palette-bottom:
+  - DEEPSLATE: $substratum_meta.yml:strata.deepslate.top
+  - BEDROCK: $substratum_meta.yml:strata.bedrock.top
+  - BLOCK:minecraft:bedrock: $substratum_meta.yml:strata.bedrock.bottom
+```
+
+This adds the deepslate transition and bottom bedrock to every terrain palette.
+
+### Palette Bedrock
+
+```yaml
+palette-bedrock:
+  - BEDROCK: $substratum_meta.yml:strata.bedrock.top
+  - BLOCK:minecraft:bedrock: $substratum_meta.yml:strata.bedrock.bottom
+```
+
+Used for palettes that define their own deepslate variants (like biome-specific deepslate).
+
+## Common Configuration Scenarios
+
+<AccordionGroup>
+  <Accordion title="Shallower Deepslate" icon="arrow-up">
+    To make deepslate appear closer to the surface:
+    
+    ```yaml
+    strata:
+      deepslate:
+        top: 32     # Deepslate starts at Y=32
+        bottom: 16  # Fully deepslate below Y=16
+    ```
+    
+    This creates a more prominent deepslate layer visible in upper caves.
+  </Accordion>
+  
+  <Accordion title="Deeper Deepslate" icon="arrow-down">
+    To push deepslate much deeper underground:
+    
+    ```yaml
+    strata:
+      deepslate:
+        top: -16    # Deepslate starts at Y=-16
+        bottom: -32 # Fully deepslate below Y=-32
+    ```
+    
+    This keeps most caves in the stone layer.
+  </Accordion>
+  
+  <Accordion title="Sharp Deepslate Transition" icon="divide">
+    For an immediate transition without a gradient:
+    
+    ```yaml
+    strata:
+      deepslate:
+        top: 0
+        bottom: 0   # Same value = no transition zone
+    ```
+    
+    Stone above Y=0, deepslate below, with minimal mixing.
+  </Accordion>
+  
+  <Accordion title="Wide Transition Zone" icon="arrows-left-right">
+    For a very gradual, extended transition:
+    
+    ```yaml
+    strata:
+      deepslate:
+        top: 32     # Start transition at Y=32
+        bottom: -32 # End transition at Y=-32
+    ```
+    
+    Creates a 64-block tall gradient of stone and deepslate mixing.
+  </Accordion>
+  
+  <Accordion title="No Top Bedrock" icon="ban">
+    For drop-in merge with surface worlds, remove the ceiling:
+    
+    ```yaml
+    strata:
+      bedrock-top:
+        top: 320    # Push above world limit
+        bottom: 320 # Effectively disabled
+    ```
+    
+    Prevents bedrock ceiling from blocking surface access.
+  </Accordion>
+  
+  <Accordion title="Thicker Bedrock Floor" icon="layer-group">
+    For a more substantial bedrock layer at the bottom:
+    
+    ```yaml
+    strata:
+      bedrock:
+        top: -56    # Start bedrock higher
+        bottom: -64 # Standard bottom
+    ```
+    
+    Creates an 8-block thick bedrock floor instead of 4 blocks.
+  </Accordion>
+</AccordionGroup>
+
+## Visual Strata Diagram
+
+```
+Y=319  ████████████████████  <- Top Bedrock (solid)
+Y=318  ████████████████████
+Y=317  ██▓▓▓▓▓▓▓▓▓▓▓▓▓▓██  <- Bedrock transition
+Y=316  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+       
+       ... Cave Space ...
+       
+Y=7    ████████████████████  <- Stone (deepslate top)
+Y=6    ████▓▓▓▓████▓▓▓▓████  <- Stone/Deepslate mix
+Y=0    ▓▓▓▓████▓▓▓▓████▓▓▓▓
+Y=-7   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  <- Deepslate (deepslate bottom)
+       
+       ... More Cave Space ...
+       
+Y=-60  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  <- Deepslate (bedrock top)
+Y=-61  ▓▓▓▓██████▓▓▓▓██████  <- Deepslate/Bedrock mix
+Y=-63  ██████████████████▓▓
+Y=-64  ████████████████████  <- Bedrock (bedrock bottom)
+
+Legend:
+█ = Stone/Bedrock (solid)
+▓ = Deepslate
+```
+
+## Testing Strata Changes
+
+<Steps>
+  <Step title="Edit Configuration">
+    Modify the `strata` section in `substratum_meta.yml` with your desired Y-levels.
+  </Step>
+  
+  <Step title="Reload Terra">
+    Apply changes with `/terra reload` or by restarting your server.
+  </Step>
+  
+  <Step title="Generate New Chunks">
+    Strata settings only affect newly generated chunks. Travel to unexplored areas or create a new test world.
+  </Step>
+  
+  <Step title="Verify Layers">
+    Use F3 debug screen to check your Y-coordinate and verify materials match your configuration at the expected levels.
+  </Step>
+</Steps>
+
+<Warning>
+  Changing strata configuration after world generation creates sharp boundaries between old and new chunks, as the material layers will suddenly change at chunk borders.
+</Warning>
+
+## Technical Details
+
+### How Transitions Work
+
+Both deepslate and bedrock use a transition zone between their `top` and `bottom` values:
+
+- The transition is not linear - it uses noise functions to create natural-looking mixing
+- Blocks in the transition zone have a probability of being either material based on Y-level
+- Closer to `top` = more of the upper material (stone or deepslate)
+- Closer to `bottom` = more of the lower material (deepslate or bedrock)
+
+### Palette System Integration
+
+Strata settings are applied through Terra's palette system, which defines material distributions:
+
+1. Each biome has a terrain palette
+2. Palettes include references to strata Y-levels
+3. When terrain generates, the palette consults strata configuration
+4. Materials are placed according to Y-level and strata rules
+
+This system allows biomes to have unique terrain while respecting global strata boundaries.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Biome Distribution"
+    icon="chart-network"
+    href="/configuration/biome-distribution"
+  >
+    Configure biome scales and Y-level ranges
+  </Card>
+  <Card
+    title="Disabling Biomes"
+    icon="ban"
+    href="/configuration/disabling-biomes"
+  >
+    Control which biomes spawn in your world
+  </Card>
+</CardGroup>
