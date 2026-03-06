@@ -1,0 +1,86 @@
+{
+  "projectType": "general",
+  "projectName": "Substratum",
+  "projectDescription": "A Terra pack that creates a completely underground world with several unique caves to explore within.",
+  "theme": "aspen",
+  "primaryColor": "#478e33",
+  "lightColor": "#533a07",
+  "darkColor": null,
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "introduction",
+          "installation/overview",
+          "installation/world-installation",
+          "installation/drop-in-merge"
+        ]
+      },
+      {
+        "group": "Cave Biomes",
+        "pages": [
+          "biomes/overview",
+          "biomes/honey-grotto",
+          "biomes/frozen-caverns",
+          "biomes/molten-passages",
+          "biomes/fungal-undergrowth",
+          "biomes/amethyst-hollow",
+          "biomes/subterranean-mesa",
+          "biomes/terracotta-caves",
+          "biomes/sandy-chambers",
+          "biomes/overgrown-dugout",
+          "biomes/marble-mines",
+          "biomes/granite-mines",
+          "biomes/andesite-mines",
+          "biomes/diorite-mines",
+          "biomes/coral-coves"
+        ]
+      },
+      {
+        "group": "Configuration",
+        "pages": [
+          "configuration/overview",
+          "configuration/biome-distribution",
+          "configuration/strata-layers",
+          "configuration/disabling-biomes"
+        ]
+      },
+      {
+        "group": "Advanced",
+        "pages": [
+          "advanced/cave-carving-system",
+          "advanced/custom-features",
+          "advanced/palette-system"
+        ]
+      },
+      {
+        "group": "Resources",
+        "pages": [
+          "resources/troubleshooting",
+          "resources/faq"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "14 unique underground cave biomes with distinct themes and generation",
+    "Advanced 3D noise-based cave carving with spaghetti, cheese, and mega cave systems",
+    "Customizable biome distribution and scaling parameters",
+    "Drop-in merge capability to add caves to existing Terra packs",
+    "Custom terrain palettes, features, and decorations for each biome",
+    "Configurable Y-level ranges and strata layers"
+  ],
+  "publicApiSurface": [
+    "global-scale - Modifies the scale of all biomes",
+    "cave-scale - Controls the scale of cave foundations",
+    "cave-biome-scale - Controls the scale of cave biome placement",
+    "substratum-carving-max - Controls max height of cave generation",
+    "substratum-carving-min - Controls min height of cave generation",
+    "cave-biome-max - Controls max height of cave biome generation",
+    "cave-biome-min - Controls min height of cave biome generation",
+    "strata.deepslate.top - Y level where deepslate begins",
+    "strata.bedrock.top - Y level where bedrock begins",
+    "Biome enable/disable via add_substratum_cave_biomes.yml"
+  ]
+}
